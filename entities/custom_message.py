@@ -42,7 +42,7 @@ class MessageHandler:
 						text=text,
 						reply_markup=reply_markup
 					)
-				except MessageNotModified:
+				except:
 					pass
 
 		self.storage[user_id] = message
