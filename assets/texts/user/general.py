@@ -23,7 +23,7 @@ support_link = "🔘 <b>Support</b> - In progress"  # add link
 
 
 rates = """
-🔘 <b>🔘 <u>CRYPTO SHOT</u> 🔘</b> 🔘
+🔘 <b><u>CRYPTO SHOT</u></b> 🔘
 
 ▫️ MANUAL по P2P + 150 арбитражных связок
 ▫️ Доступ к межбиржевому сканеру SPOT торговли
