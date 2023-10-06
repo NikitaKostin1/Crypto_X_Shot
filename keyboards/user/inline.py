@@ -16,26 +16,26 @@ available_ask_types = StandardParametres().ask_type.available_values
 available_fiats = StandardParametres().fiat.available_values
 
 
-channel_kb = InlineKeyboardMarkup(row_width=2)
-channel = InlineKeyboardButton(text="📢 Канал", url="https://t.me/SpreadCatchers")
-support = InlineKeyboardButton(text="👨‍🔧 Поддержка", url="https://t.me/SC_Bot_Support")
+channel_kb = InlineKeyboardMarkup(row_width=2)  # add link
+channel = InlineKeyboardButton(text="📢 Канал", url="")
+support = InlineKeyboardButton(text="🫡 SUPPORT 🫡", url="")
 channel_kb.row(channel, support)
 
 test_drive = InlineKeyboardMarkup(row_width=1)
 start = InlineKeyboardButton(text="Начать тест-драйв", callback_data="test_drive")
 test_drive.add(start)
 
-payment_option = InlineKeyboardMarkup(row_width=2)
-transfer = InlineKeyboardButton(text="💸 Переводом", url="https://t.me/SC_Bot_Support")
-usdt = InlineKeyboardButton(text="🪙 USDT", url="https://t.me/SC_Bot_Support")
-card = InlineKeyboardButton(text="💳 Картой", url="https://t.me/SC_Bot_Support")
-installment = InlineKeyboardButton(text="🏦 Рассрочка", url="https://t.me/SC_Bot_Support")
+payment_option = InlineKeyboardMarkup(row_width=2)    # add link
+transfer = InlineKeyboardButton(text="💸 Переводом", url="")
+usdt = InlineKeyboardButton(text="🪙 USDT", url="")
+card = InlineKeyboardButton(text="💳 Картой", url="")
+installment = InlineKeyboardButton(text="🏦 Рассрочка", url="")
 payment_option.row(transfer, usdt).row(card, installment)
 
-signals_type_option = InlineKeyboardMarkup(row_width=1)
+signals_type_option = InlineKeyboardMarkup(row_width=1)  # add link
 p2p = InlineKeyboardButton(text="p2p", callback_data="parametres_menu")
-spot = InlineKeyboardButton(text="spot", url="https://t.me/SpreadCatcher_pro_Bot")
-p2p_spot = InlineKeyboardButton(text="p2p + spot", url="https://t.me/SpreadCatcher_pro_Bot")
+spot = InlineKeyboardButton(text="spot", url="https://t.me/Crypto_X_Shot_pro_bot")
+p2p_spot = InlineKeyboardButton(text="p2p + spot", url="https://t.me/Crypto_X_Shot_pro_bot")
 signals_type_option.add(p2p).add(spot).add(p2p_spot)
 
 parametres = InlineKeyboardMarkup(row_width=3)
