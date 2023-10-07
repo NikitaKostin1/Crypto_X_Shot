@@ -10,7 +10,6 @@ new_user.add(b1).add(b2).add(b3)
 
 active_subscription = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
 b1 = KeyboardButton("⚙️ Настройки")
-b2 = KeyboardButton("👤 Профиль")
 b3 = KeyboardButton("🔔 Вкл/Выкл")
 active_subscription.row(b1, b2).add(b3)
 

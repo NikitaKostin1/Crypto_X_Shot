@@ -207,35 +207,35 @@ async def rates(message: types.Message, state: FSMContext):
 	await MainMessage.acquire(msg)
 
 
-@logger.catch
-async def profile(message: types.Message, state: FSMContext):
-	"""
-	Handles the 'rates' reply keyboard button.
-	Displays the profile data to the user.
-	"""
-	await state.finish()
-	user_id = message["from"]["id"]
+# @logger.catch
+# async def profile(message: types.Message, state: FSMContext):  # deprecated
+# 	"""
+# 	Handles the 'rates' reply keyboard button.
+# 	Displays the profile data to the user.
+# 	"""
+# 	await state.finish()
+# 	user_id = message["from"]["id"]
 
-	expiration_date = await manager.subscription_expiration_date(user_id)
-	if not expiration_date:
-		await message.answer(txt.error)
-		return
+# 	expiration_date = await manager.subscription_expiration_date(user_id)
+# 	if not expiration_date:
+# 		await message.answer(txt.error)
+# 		return
 
-	if isinstance(expiration_date, datetime): 
-		date_string = expiration_date.strftime("%d/%m/%Y")
-		days_left = str(
-			util.date_to_int(expiration_date) - \
-			util.date_to_int(datetime.now())
-		)
-	else:
-		date_string = expiration_date
-		days_left = date_string
+# 	if isinstance(expiration_date, datetime): 
+# 		date_string = expiration_date.strftime("%d/%m/%Y")
+# 		days_left = str(
+# 			util.date_to_int(expiration_date) - \
+# 			util.date_to_int(datetime.now())
+# 		)
+# 	else:
+# 		date_string = expiration_date
+# 		days_left = date_string
 
-	msg = await message.answer(
-		txt.profile.format(
-			expiration_date=date_string,
-			days_left=days_left
-		),
-		disable_web_page_preview=True
-	)
-	await MainMessage.acquire(msg)
+# 	msg = await message.answer(
+# 		txt.profile.format(
+# 			expiration_date=date_string,
+# 			days_left=days_left
+# 		),
+# 		disable_web_page_preview=True
+# 	)
+# 	await MainMessage.acquire(msg)
