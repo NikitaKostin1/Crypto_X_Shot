@@ -1,4 +1,4 @@
-from config import logger
+ from config import logger
 import json
 import asyncio
 import aiohttp
@@ -9,6 +9,7 @@ from .parser import (
 	Advertiser, AdvСonditions
 ) 
 
+from aiohttp.client_exceptions import ClientConnectorError
 from datetime import datetime
 from aiohttp.client import ClientSession
 from typing import (
