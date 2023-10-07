@@ -108,12 +108,11 @@ async def switch_bot_state(message: types.Message, state: FSMContext):
 		return
 
 	if is_bot_on:
-		await message.answer(txt.bot_disabled)
-		msg = await message.answer(txt.bot_disabling_info)
+		msg = await message.answer(txt.bot_disabled)
 	else:
-		await message.answer(txt.bot_enabled)
-		msg = await message.answer(txt.bot_enabling_info)
+		msg = await message.answer(txt.bot_enabled)
 
+	await message.answer_dice(emoji="🎯")
 	await MainMessage.acquire(msg)
 
 

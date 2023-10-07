@@ -1,4 +1,4 @@
- from config import logger
+from config import logger
 import json
 import asyncio
 import aiohttp

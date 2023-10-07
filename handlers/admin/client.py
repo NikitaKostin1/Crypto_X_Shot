@@ -127,6 +127,7 @@ async def give_access(message: types.Message):
 
 	try:
 		await bot.send_message(user_id, text, reply_markup=markup)
+		await message.answer_dice(emoji="🎯")
 	except BotBlocked:
 		pass
 

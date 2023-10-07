@@ -14,16 +14,8 @@ existing_user_greeting = """ \
 """
 
 payment_success = """ \
-Оплата прошла успешно! Тариф <b>PREMIUM</b> активирован.
-
-Поздравляем, теперь Вы часть команды <b>SPREADCATCHERS</b>! 🎊 
-
-<b>МАТЕРИАЛЫ ДЛЯ РАБОТЫ:</b>
-
-📔 <b><a href="https://telegra.ph/Obuchenie-P2P-07-18">MANUAL по Р2Р</a></b>
-📚 <b><a href="">GUIDE по Crypto Shot</a></b>
-🔂 <b><a href="https://telegra.ph/Paki-iz-150-mezhdunarodnyh-svyazok-09-04">150 МЕЖДУНАРОДНЫХ СВЯЗОК</a></b>
-"""  # add link
+<b><u>CRYPTO SHOT АКТИВИРОВАН</u></b> 🎯
+"""
  
 tester_activated = """\
 Тестовый период пользования <b>Crypto Shot</b> активирован, в течение одного часа Вам доступен следующий функционал:
