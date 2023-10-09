@@ -24,3 +24,5 @@ subscription_expired = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboa
 b1 = KeyboardButton("🎯 АКТИВИРОВАТЬ SHOT 🎯")
 b2 = KeyboardButton("🫡 SUPPORT 🫡")
 subscription_expired.add(b1).add(b2)
+
+tester_expired = subscription_expired

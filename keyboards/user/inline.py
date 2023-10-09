@@ -16,20 +16,19 @@ available_ask_types = StandardParametres().ask_type.available_values
 available_fiats = StandardParametres().fiat.available_values
 
 
-channel_kb = InlineKeyboardMarkup(row_width=2)  # add link
-channel = InlineKeyboardButton(text="📢 Канал", url="www.google.com")
-support = InlineKeyboardButton(text="🫡 SUPPORT 🫡", url="www.google.com")
-channel_kb.row(channel, support)
+channel_kb = InlineKeyboardMarkup(row_width=2)
+support = InlineKeyboardButton(text="🫡 SUPPORT 🫡", url="https://t.me/CRYPTO_SHOT_SUPPORT")
+channel_kb.add(support)
 
 test_drive = InlineKeyboardMarkup(row_width=1)
 start = InlineKeyboardButton(text="Начать тест-драйв", callback_data="test_drive")
 test_drive.add(start)
 
-payment_option = InlineKeyboardMarkup(row_width=2)    # add link
-transfer = InlineKeyboardButton(text="💸 Переводом", url="www.google.com")
-usdt = InlineKeyboardButton(text="🪙 USDT", url="www.google.com")
-card = InlineKeyboardButton(text="💳 Картой", url="www.google.com")
-installment = InlineKeyboardButton(text="🏦 Рассрочка", url="www.google.com")
+payment_option = InlineKeyboardMarkup(row_width=2)
+transfer = InlineKeyboardButton(text="💸 Переводом", url="https://t.me/CRYPTO_SHOT_SUPPORT")
+usdt = InlineKeyboardButton(text="🪙 USDT", url="https://t.me/CRYPTO_SHOT_SUPPORT")
+card = InlineKeyboardButton(text="💳 Картой", url="https://t.me/CRYPTO_SHOT_SUPPORT")
+installment = InlineKeyboardButton(text="🏦 Рассрочка", url="https://t.me/CRYPTO_SHOT_SUPPORT")
 payment_option.row(transfer, usdt).row(card, installment)
 
 signals_type_option = InlineKeyboardMarkup(row_width=1)  # add link
