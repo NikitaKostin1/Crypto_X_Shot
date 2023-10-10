@@ -68,9 +68,8 @@ async def start(message: types.Message, state: FSMContext):
 			await message.answer(txt.error)
 			return
 
-		await message.answer(
-			txt.new_user_greeting, reply_markup=rkb.new_user
-		)
+		await message.answer_dice(emoji="🎯", reply_markup=rkb.new_user)
+		
 		msg = await message.answer(
 			txt.faq, reply_markup=ikb.channel_kb, 
 			disable_web_page_preview=True
@@ -184,7 +183,7 @@ async def support(message: types.Message, state: FSMContext):
 
 	msg = await util.send_photo(
 		user_id, 
-		photo="AgACAgQAAxkDAAEFaMhjAAE95GLbtIzfRI5N_OHTQDGDGl4AAim5MRtsnwABUGE6F6MLZ-usAQADAgADeAADKQQ",
+		photo="AgACAgQAAxkDAAIB42UlgzkfLQKdaZmVYXocu129MWJ1AAKfwTEbdr0xUR-a-ky-JrbXAQADAgADeQADMAQ",
 		caption=txt.support_link
 	)
 	await MainMessage.acquire(msg)
