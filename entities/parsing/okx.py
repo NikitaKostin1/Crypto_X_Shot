@@ -147,6 +147,7 @@ class OkxParser(Parser):
 			"userType": "all",
 			"hideOverseasVerificationAds": "false",
 			"sortType": sort_alias[adv_type],
+			"urlId": "1",
 			"limit": "20",
 			"cryptoCurrency": self.currency.lower(),
 			"fiatCurrency": self.fiat.lower(),
@@ -157,13 +158,15 @@ class OkxParser(Parser):
 		url_params = urllib.parse.urlencode(parametres)
 		url = str(base) + "?" + str(url_params)
 
-
 		try:
 			async with session.get(
 				url, headers=self.get_headers(), ssl=False
 			) as client_response:
 				if client_response.status != 200: return
 				response = json.loads(await client_response.text())
+
+				if not response["data"]:
+					return
 				if not response["data"][url_format[adv_type]]:
 					return
 
