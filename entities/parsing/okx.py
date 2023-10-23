@@ -24,7 +24,7 @@ class OkxParser(Parser):
 		"AdvCash": "AdvCash",
 		"AirTM": "AirTM",
 		"Alfa-bank": "Alfa Bank",
-		"Bank_Transfer": "Bank Transfer",
+		"Bank_Transfer": "bank",
 		"Belarusbank": "Belarusbank",
 		"Izibank": "Izibank",
 		"Monobank": "Monobank",
@@ -139,7 +139,7 @@ class OkxParser(Parser):
 			"ask": "price_desc"
 		}
 
-		base = "https://www.okx.com/v3/c2c/tradingOrders/getMarketplaceAdsPrelogin"
+		endpoint = "https://www.okx.com/v3/c2c/tradingOrders/getMarketplaceAdsPrelogin"
 		parametres = {
 			"t": int(datetime.now().timestamp()),
 			"side": url_format[adv_type],
@@ -156,7 +156,7 @@ class OkxParser(Parser):
 		}
 
 		url_params = urllib.parse.urlencode(parametres)
-		url = str(base) + "?" + str(url_params)
+		url = str(endpoint) + "?" + str(url_params)
 
 		try:
 			async with session.get(

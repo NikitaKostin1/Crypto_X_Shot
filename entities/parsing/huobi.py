@@ -171,10 +171,8 @@ class HuobiParser(Parser):
 			try:
 				response = json.loads(await client_response.text())
 				if response["totalCount"] == 0:
-					# logger.warning(f"Huobi {adv_type} 0 adverstisments: {self.currency=}, {self.fiat=}, {bank=}, {self.limits=}")
 					return
 			except Exception as e:
-				# logger.error(f"Huobi parser (most likely Cloudflare): {e}")
 				return
 
 		self._adv_validation(response, adv_type, bank)

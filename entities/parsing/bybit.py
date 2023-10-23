@@ -26,7 +26,7 @@ class BybitParser(Parser):
 		"PrivatBank": "60",
 		"QIWI": "62",
 		"RaiffeisenBankAval": "63",
-		"Tinkoff": "75",
+		"Tinkoff": "581",
 		"Wise": "34",
 		"YandexMoney": "88",
 		"RaiffeisenBank": "64",
@@ -52,10 +52,10 @@ class BybitParser(Parser):
 		"Papara": "114",
 		"QNB": "308",
 		"Akbank": "532",
-		"Alfa-bank": "379",
+		"Alfa-bank": "583",
 		"PayPal": "54",
 		"SBP": "382",
-		"Sberbank": "377",
+		"Sberbank": "582",
 		"Skrill": "162",
 		"DenizBank": "535",
 		"AirTM": "7",
@@ -129,7 +129,7 @@ class BybitParser(Parser):
 		"""
 		Fetch advertisements for the given advertisement type and bank using the Bybit API.
 		"""
-		if BybitParser.banks_alias.get(bank):
+		if not BybitParser.banks_alias.get(bank):
 			return
 
 		# For some reason works only with these headers
@@ -143,7 +143,7 @@ class BybitParser(Parser):
 			"ask": "0"
 		}
 
-		base = "https://api2.bybit.com/spot/api/otc/item/list"
+		endpoint = "https://api2.bybit.com/fiat/otc/item/online"
 		parametres = {
 			"userId": "",
 			"tokenId": self.currency,
@@ -152,22 +152,22 @@ class BybitParser(Parser):
 			"side": url_format[adv_type],
 			"size": "10",
 			"page": "1",
-			"amount": self.limits
+			"amount": str(self.limits) if self.limits else "",
+			"authMaker": False,
+			"canTrade": False
 		}
 
-		url_params = urllib.parse.urlencode(parametres)
-		url = str(base) + "?" + str(url_params)
-
 		try:
-			async with session.get(url, headers=headers) as client_response:
+			async with session.post(
+				endpoint, headers=headers, json=parametres
+			) as client_response:
+
 				if client_response.status != 200: return
 				response = json.loads(await client_response.text())
-				if response["result"]["count"] == 0:
-					return
+				if response["result"]["count"] == 0: return
+
 		except Exception as e:
 			logger.error(e)
+			return
 
 		self._adv_validation(response["result"]["items"], adv_type, bank)
-
-			
-

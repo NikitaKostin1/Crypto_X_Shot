@@ -136,7 +136,7 @@ class BinanceParser(Parser):
 			bank (str): The bank associated with the advertisements.
 			session (ClientSession): The aiohttp ClientSession to use for the HTTP request.
 		"""
-		if bank not in BinanceParser.banks_alias:
+		if not BinanceParser.banks_alias.get(bank):
 			return
 
 		parametres_format = {
@@ -144,22 +144,23 @@ class BinanceParser(Parser):
 			"ask": "SELL"
 		}
 
-		parametres_json = {
-			"asset": self.currency,
+		parametres = {
 			"fiat": self.fiat,
-			"merchantCheck": False,
 			"page": 1,
-			"payTypes": [BinanceParser.banks_alias[bank]],
-			"publisherType": None,
 			"rows": 10,
 			"tradeType": parametres_format[adv_type],
-			"transAmount":  self.limits
+			"asset": self.currency,
+			"countries": [],
+			"proMerchantAds": False,
+			"shieldMerchantAds": False,
+			"publisherType": None,
+			"payTypes": [BinanceParser.banks_alias[bank]],
+			"classifies": ["mass", "profession"]
 		}
-
 
 		async with session.post(
 			'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search',
-			headers=self.headers, json=parametres_json) as client_response:
+			headers=self.headers, json=parametres) as client_response:
 			response = json.loads(str(await client_response.text()))
 
 			if not response["data"]:

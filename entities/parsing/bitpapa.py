@@ -1,6 +1,7 @@
 from config import logger
 import asyncio
 import aiohttp
+import http.cookiejar
 import json
 import urllib
 
@@ -142,7 +143,7 @@ class BitpapaParser(Parser):
 		if bank == "Payeer":
 			bank = bank + " " + self.fiat
 
-		if bank not in BitpapaParser.banks_alias:
+		if not BitpapaParser.banks_alias.get(bank):
 			return
 
 		adv_type_alias = {
@@ -156,25 +157,30 @@ class BitpapaParser(Parser):
 
 		base = "https://bitpapa.com/api/v1/pro/search"
 		parametres = {
-			"amount": self.limits,
+			"crypto_amount": "",
 			"type": adv_type_alias[adv_type],
 			"page": "1",
 			"sort": sort_alias[adv_type],
 			"currency_code": self.fiat,
+			"previous_currency_code": self.fiat,
 			"crypto_currency_code": self.currency,
-			"with_correct_limits": "false",
-			"limit": "20",
-			"payment_method_bank_code": BitpapaParser.banks_alias[bank]
+			"payment_method_bank_code": BitpapaParser.banks_alias[bank],
+			"with_correct_limits": False,
+			"limit": "20"
 		}
-		if not self.limits:
-			del parametres["amount"]
 
 		url_params = urllib.parse.urlencode(parametres)
 		url = str(base) + "?" + str(url_params)
+		headers = {
+			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0",
+			"Accept": self.headers["Accept"],
+			"Cookie": "cf_clearance=WGNRrsVCm5eBYNY5OemE3eAoYBK46Ydp5yOpPpRxsOI-1698050303-0-1-83834989.2cf1fa2f.d4821669-150.0.0; ajs_anonymous_id=984fc755-9ea3-484a-ab8b-31b7b25016a5; _ga=GA1.1.1950403569.1698050310; _gid=GA1.2.1654312219.1698050310; _ym_uid=1698050310611090455; _ym_d=1698050310; _ga_CZ2XS1P0VK=GS1.1.1698060903.2.1.1698061322.52.0.0; _ym_isad=1; __zlcmid=1ITmDVnBynBbE4Q; __ddg1_=5fGELnGrIdb2XTmIV6MQ",
+		}
 
-		async with session.get(url, headers=self.headers) as client_response:
+		async with session.get(url, headers=headers) as client_response:
 			if client_response.status != 200: return
 
 			response = json.loads(str(await client_response.text()))
 
+		logger.info(response)
 		self._adv_validation(response, adv_type, bank)
