@@ -14,5 +14,5 @@ from .parsing import (
 	Parser,
 	BinanceParser, HuobiParser,
 	BybitParser, OkxParser, 
-	BitpapaParser
+	BitpapaParser, CommexParser
 )

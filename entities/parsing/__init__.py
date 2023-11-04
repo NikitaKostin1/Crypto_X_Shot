@@ -10,3 +10,4 @@ from .huobi import HuobiParser
 from .bybit import BybitParser
 from .okx import OkxParser
 from .bitpapa import BitpapaParser
+from .commex import CommexParser

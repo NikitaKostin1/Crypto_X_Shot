@@ -127,10 +127,10 @@ class OkxParser(Parser):
 		"""
 		Fetch advertisements for the given advertisement type and bank using the OKX API.
 		"""
-		if bank not in OkxParser.banks_alias:
+		if not OkxParser.banks_alias.get(bank):
 			return
 
-		url_format = {
+		adv_type_alias = {
 			"bid": "sell",
 			"ask": "buy"
 		}
@@ -142,7 +142,7 @@ class OkxParser(Parser):
 		endpoint = "https://www.okx.com/v3/c2c/tradingOrders/getMarketplaceAdsPrelogin"
 		parametres = {
 			"t": int(datetime.now().timestamp()),
-			"side": url_format[adv_type],
+			"side": adv_type_alias[adv_type],
 			"paymentMethod": OkxParser.banks_alias[bank],
 			"userType": "all",
 			"hideOverseasVerificationAds": "false",
@@ -167,10 +167,10 @@ class OkxParser(Parser):
 
 				if not response["data"]:
 					return
-				if not response["data"][url_format[adv_type]]:
+				if not response["data"][adv_type_alias[adv_type]]:
 					return
 
 		except ClientConnectorError:
 			return
 
-		self._adv_validation(response["data"][url_format[adv_type]], adv_type, bank)
+		self._adv_validation(response["data"][adv_type_alias[adv_type]], adv_type, bank)

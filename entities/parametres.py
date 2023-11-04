@@ -86,7 +86,7 @@ class Markets(Parameter):
 	title: str = "markets"
 	available_values: List[str] = field(default_factory=lambda: [
 		"Binance", "Huobi", "Bybit", "OKX", "bitpapa",
-		'CoinBase', 'Crypto', 'Kuna.io', 'KuCoin',
+		"Commex", 'CoinBase', 'Crypto', 'Kuna.io', 'KuCoin',
 		'Gate.io', 'WhiteBit', 'Kraken', 'Bitfinex',
 		'mexc', 'Cryptology', 'Exmo', 'bitHumb',
 		'Liquid', 'Bittrex', 'Poloniex', 'BitMart',
@@ -198,7 +198,7 @@ class StandardParametres(Parametres):
 		"RosBank"
 	]))  # TODO: move to databse
 	markets: Markets = field(default_factory=lambda: Markets([
-		"Binance", "Huobi", "Bybit", "OKX", "bitpapa"
+		"Binance", "Huobi", "Bybit", "OKX", "Commex"
 	]))  # TODO: move to databse
 	spread: Spread = Spread(1.0)
 	bid_type: BidType = BidType("Taker")

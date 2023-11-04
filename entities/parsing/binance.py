@@ -27,7 +27,7 @@ class BinanceParser(Parser):
 		"Izibank": "izibank",
 		"RaiffeisenBankAval": "RaiffeisenBankAval",
 		"Monobank": "Monobank",
-		"Tinkoff": "TinkoffNew",
+		"Tinkoff": "RaiffeisenBank",
 		"Skrill": "SkrillMoneybookers",
 		"Wise": "Wise",
 		"AirTM": "AirTM",

@@ -140,6 +140,11 @@ class BitpapaParser(Parser):
 			bank (str): The bank associated with the advertisements.
 			session (ClientSession): The aiohttp ClientSession to use for the HTTP request.
 		"""
+
+		# Closed duo to cloudflare defense
+		return 
+
+
 		if bank == "Payeer":
 			bank = bank + " " + self.fiat
 
@@ -174,7 +179,8 @@ class BitpapaParser(Parser):
 		headers = {
 			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0",
 			"Accept": self.headers["Accept"],
-			"Cookie": "cf_clearance=WGNRrsVCm5eBYNY5OemE3eAoYBK46Ydp5yOpPpRxsOI-1698050303-0-1-83834989.2cf1fa2f.d4821669-150.0.0; ajs_anonymous_id=984fc755-9ea3-484a-ab8b-31b7b25016a5; _ga=GA1.1.1950403569.1698050310; _gid=GA1.2.1654312219.1698050310; _ym_uid=1698050310611090455; _ym_d=1698050310; _ga_CZ2XS1P0VK=GS1.1.1698060903.2.1.1698061322.52.0.0; _ym_isad=1; __zlcmid=1ITmDVnBynBbE4Q; __ddg1_=5fGELnGrIdb2XTmIV6MQ",
+			"Cookie": "cf_clearance=H0fxWy0kOTT3.Q3pNNUESmIwx355drYKz4GvywOCd_o-1699032768-0-1-2bf61a3b.6ad02537.7cf745db-150.0.0",
+			# The problem is cloudflare cookies that are generated every time 
 		}
 
 		async with session.get(url, headers=headers) as client_response:
@@ -182,5 +188,4 @@ class BitpapaParser(Parser):
 
 			response = json.loads(str(await client_response.text()))
 
-		logger.info(response)
 		self._adv_validation(response, adv_type, bank)
