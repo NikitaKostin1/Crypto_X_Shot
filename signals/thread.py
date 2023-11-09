@@ -34,7 +34,7 @@ async def server(wait_for: int):
 	await manager.set_fiats_symbols()
 
 	while True:
-		await asyncio.sleep(wait_for)
+		await asyncio.sleep(5)
 		logger.success("Server ping")
 
 		try:

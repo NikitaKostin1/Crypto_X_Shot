@@ -159,7 +159,7 @@ class BybitParser(Parser):
 
 		try:
 			async with session.post(
-				endpoint, headers=self.get_headers(), json=parametres
+				endpoint, headers=headers, json=parametres
 			) as client_response:
 
 				if client_response.status != 200: return
