@@ -3,6 +3,7 @@ import json
 import asyncio
 import aiohttp
 import urllib
+import random
 
 from .parser import (
 	Parser, ParserResponse, Advertisement,
@@ -127,17 +128,25 @@ class CommexParser(Parser):
 			"payTypes": [bank],
 			"transAmount": str(self.limits)
 		}
+		status_code = 429
+		cycles = 0
 
 		try:
-			async with session.post(
-				endpoint, headers=self.get_headers(), json=parametres  # ssl=False, 
-			) as client_response:
+			while status_code == 429:
+				async with session.post(
+					endpoint, headers=self.get_headers(), json=parametres
+				) as client_response:
 
-				if client_response.status != 200: return
-				response = json.loads(await client_response.text())
+					status_code = client_response.status
+					if status_code == 200: 
+						response = json.loads(await client_response.text())
+						if not response["data"]: return
+						break
 
-				if not response["data"]:
-					return
+				cycles += 1
+				if cycles % 10 == 0: return
+
+				await asyncio.sleep(random.randint(1, 3))
 
 		except ClientConnectorError:
 			return

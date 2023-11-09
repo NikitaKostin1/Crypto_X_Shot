@@ -166,7 +166,8 @@ async def get_tester_users(connection: Connection) -> List[User]:
 				subscription_id=record.get("subscription_id"),
 				subscription_begin_date=record.get("subscription_begin_date"),
 				is_test_active=record.get("is_test_active"),
-				test_begin_date=record.get("test_begin_date")
+				test_begin_date=record.get("test_begin_date"),
+				language=record.get("language"),
 			)
 			users.append(user)
 
@@ -200,7 +201,8 @@ async def get_users_with_non_tester_subscription(connection: Connection) -> List
 				subscription_id=record.get("subscription_id"),
 				subscription_begin_date=record.get("subscription_begin_date"),
 				is_test_active=record.get("is_test_active"),
-				test_begin_date=record.get("test_begin_date")
+				test_begin_date=record.get("test_begin_date"),
+				language=record.get("language"),
 			)
 			users.append(user)
 

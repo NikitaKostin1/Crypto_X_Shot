@@ -33,3 +33,4 @@ class User:
 
 	is_test_active: bool = False
 	test_begin_date: Union[datetime, None] = None
+	language: str = "ru"

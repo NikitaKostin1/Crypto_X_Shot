@@ -27,7 +27,7 @@ class BybitParser(Parser):
 		"QIWI": "62",
 		"RaiffeisenBankAval": "63",
 		"Tinkoff": "581",
-		"Wise": "34",
+		"Wise": "78",
 		"YandexMoney": "88",
 		"RaiffeisenBank": "64",
 		"RosBank": "185",
@@ -159,7 +159,7 @@ class BybitParser(Parser):
 
 		try:
 			async with session.post(
-				endpoint, headers=headers, json=parametres
+				endpoint, headers=self.get_headers(), json=parametres
 			) as client_response:
 
 				if client_response.status != 200: return

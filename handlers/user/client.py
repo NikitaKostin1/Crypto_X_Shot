@@ -5,18 +5,15 @@ from datetime import datetime
 from create_bot import bot
 from config import logger
 
+from handlers import misc
 from . import manager
 from . import util
-from assets import texts as txt
+# from assets import texts as txt
 from .parametres import util as params_util
 
 from entities import (
 	MainMessage, AdditionalMessage,
 	User, Parametres
-)
-from keyboards.user import (
-	reply as rkb,
-	inline as ikb
 )
 
 
@@ -26,12 +23,14 @@ async def start(message: types.Message, state: FSMContext):
 	"""
 	Handles the '/start' command. Inserts the user into the database if not already present.
 	"""
-	await state.finish()
-
 	user = User(
 		user_id=message["from"]["id"],
-		username=str(message["from"]["username"])
+		username=str(message["from"]["username"]),
+		language=message["from"]["language_code"]
 	)
+
+	txt = await misc.get_language_module(user.user_id)
+	kb = await misc.get_keyboard_module(user.user_id)
 
 	user_exists = await manager.is_user_exists(user.user_id)
 
@@ -68,10 +67,10 @@ async def start(message: types.Message, state: FSMContext):
 			await message.answer(txt.error)
 			return
 
-		await message.answer_dice(emoji="🎯", reply_markup=rkb.new_user)
+		await message.answer_dice(emoji="🎯", reply_markup=kb.reply.new_user)
 		
 		msg = await message.answer(
-			txt.faq, reply_markup=ikb.channel_kb, 
+			txt.faq, reply_markup=kb.inline.channel_kb, 
 			disable_web_page_preview=True
 		)
 		await MainMessage.acquire(msg)
@@ -90,6 +89,25 @@ async def start(message: types.Message, state: FSMContext):
 		)
 
 
+
+@logger.catch
+async def language(message: types.Message):
+	"""
+
+	"""
+	user_id = message["from"]["id"]
+	await AdditionalMessage.delete(user_id)
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+
+	await message.answer(
+		txt.language_menu,
+		reply_markup=kb.inline.language_menu
+	)
+	await MainMessage.acquire(message)
+
+
 @logger.catch
 async def switch_bot_state(message: types.Message, state: FSMContext):
 	"""
@@ -98,6 +116,8 @@ async def switch_bot_state(message: types.Message, state: FSMContext):
 	await state.finish()
 	user_id = message["from"]["id"]
 	await AdditionalMessage.delete(user_id)
+
+	txt = await misc.get_language_module(user_id)
 
 	is_bot_on = await manager.is_bot_on(user_id)
 	switched = await manager.switch_bot_state(user_id)
@@ -126,9 +146,12 @@ async def parametres(message: types.Message, state: FSMContext):
 	user_id = message["from"]["id"]
 	await AdditionalMessage.delete(user_id)
 
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+
 	msg = await message.answer(
 		txt.signals_type_option,
-		reply_markup=ikb.signals_type_option
+		reply_markup=kb.inline.signals_type_option
 	)
 	await MainMessage.acquire(msg)
 
@@ -142,6 +165,9 @@ async def test_drive(message: types.Message, state: FSMContext):
 	user_id = message["from"]["id"]
 	await AdditionalMessage.delete(user_id)
 
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+
 	if await manager.is_tester(user_id) or \
 				await manager.is_subscription_active(user_id) or \
 				await manager.is_tester_expired(user_id):
@@ -149,7 +175,7 @@ async def test_drive(message: types.Message, state: FSMContext):
 
 	msg = await message.answer(
 		txt.test_drive, 
-		reply_markup=ikb.test_drive,
+		reply_markup=kb.inline.test_drive,
 		disable_web_page_preview=True
 	)
 	await MainMessage.acquire(msg)
@@ -163,6 +189,8 @@ async def channel(message: types.Message, state: FSMContext):
 	await state.finish()
 	user_id = message["from"]["id"]
 	await AdditionalMessage.delete(user_id)
+
+	txt = await misc.get_language_module(user_id)
 
 	msg = await util.send_photo(
 		user_id,
@@ -181,6 +209,8 @@ async def support(message: types.Message, state: FSMContext):
 	user_id = message["from"]["id"]
 	await AdditionalMessage.delete(user_id)
 
+	txt = await misc.get_language_module(user_id)
+
 	msg = await util.send_photo(
 		user_id, 
 		photo="AgACAgQAAxkDAAIB42UlgzkfLQKdaZmVYXocu129MWJ1AAKfwTEbdr0xUR-a-ky-JrbXAQADAgADeQADMAQ",
@@ -198,43 +228,12 @@ async def rates(message: types.Message, state: FSMContext):
 	user_id = message["from"]["id"]
 	await AdditionalMessage.delete(user_id)
 
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+
 	msg = await message.answer(
 		txt.rates,
-		reply_markup=ikb.payment_option,
+		reply_markup=kb.inline.payment_option,
 		disable_web_page_preview=True
 	)
 	await MainMessage.acquire(msg)
-
-
-# @logger.catch
-# async def profile(message: types.Message, state: FSMContext):  # deprecated
-# 	"""
-# 	Handles the 'rates' reply keyboard button.
-# 	Displays the profile data to the user.
-# 	"""
-# 	await state.finish()
-# 	user_id = message["from"]["id"]
-
-# 	expiration_date = await manager.subscription_expiration_date(user_id)
-# 	if not expiration_date:
-# 		await message.answer(txt.error)
-# 		return
-
-# 	if isinstance(expiration_date, datetime): 
-# 		date_string = expiration_date.strftime("%d/%m/%Y")
-# 		days_left = str(
-# 			util.date_to_int(expiration_date) - \
-# 			util.date_to_int(datetime.now())
-# 		)
-# 	else:
-# 		date_string = expiration_date
-# 		days_left = date_string
-
-# 	msg = await message.answer(
-# 		txt.profile.format(
-# 			expiration_date=date_string,
-# 			days_left=days_left
-# 		),
-# 		disable_web_page_preview=True
-# 	)
-# 	await MainMessage.acquire(msg)

@@ -18,6 +18,7 @@ from typing import (
 
 class BinanceParser(Parser):
 	banks_alias = {
+		"Bank_Transfer": "BANK",
 		"YandexMoney": "YandexMoneyNew",
 		"Payeer": "Payeer",
 		"AdvCash": "Advcash",
@@ -27,7 +28,9 @@ class BinanceParser(Parser):
 		"Izibank": "izibank",
 		"RaiffeisenBankAval": "RaiffeisenBankAval",
 		"Monobank": "Monobank",
+		"MTBank": "MTBank",
 		"Tinkoff": "RaiffeisenBank",
+		"Technobank": "Technobank",
 		"Skrill": "SkrillMoneybookers",
 		"Wise": "Wise",
 		"AirTM": "AirTM",
@@ -46,6 +49,7 @@ class BinanceParser(Parser):
 		"Humo": "Humo",
 		"Uzcard": "Uzcard",
 		"PayMe": "Payme",
+		"PerfectMoney": "PerfectMoney",
 		"KapitalBank": "Kapitalbank",
 		"UzbekNational": "UzbekNationalBank",
 		"Ziraat": "Ziraat",

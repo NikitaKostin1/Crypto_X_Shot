@@ -27,7 +27,7 @@ async def server(wait_for: int):
 	Args:
 		wait_for (int): The time interval to wait between server pings
 	"""
-
+	return
 	# List of user IDs that have been notified about inefficient parameters
 	notified_users: List[int] = list()
 	min_acceptable_signals_amount = 5

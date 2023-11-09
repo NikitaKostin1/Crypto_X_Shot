@@ -5,6 +5,7 @@ from datetime import datetime
 from create_bot import bot, dp
 from config import logger
 
+from handlers import misc
 from ..user import manager as user_manager
 from . import manager
 
@@ -12,10 +13,6 @@ from entities import (
 	MainMessage, AdditionalMessage,
 	User, Subscriptions,
 	StandardParametres
-)
-from assets import texts as txt
-from keyboards.user import (
-	reply as rkb
 )
 
 
@@ -40,6 +37,8 @@ async def give_access(message: types.Message):
 		return
 
 	user = await user_manager.get_user(user_id)
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	if not user:
 		# TODO: error message
@@ -70,9 +69,10 @@ async def give_access(message: types.Message):
 			subscription_id=subscription_id,
 			subscription_begin_date=datetime.now(),
 			is_test_active=True,
-			test_begin_date=datetime.now()
+			test_begin_date=datetime.now(),
+			language=user.language
 		)
-		markup = rkb.tester
+		markup = kb.reply.tester
 		text = txt.tester_activated
 
 		user_parametres_updated = await user_manager.update_user_parametres(
@@ -92,9 +92,10 @@ async def give_access(message: types.Message):
 			subscription_id=subscription_id,
 			subscription_begin_date=datetime.now(),
 			is_test_active=False,
-			test_begin_date=user.test_begin_date
+			test_begin_date=user.test_begin_date,
+			language=user.language
 		)
-		markup = rkb.active_subscription
+		markup = kb.reply.active_subscription
 		text = txt.payment_success
 
 
@@ -167,6 +168,8 @@ async def reset_access(message: types.Message):
 		return
 
 	zeroed = await manager.reset_access(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+	txt = await misc.get_language_module(user_id)
 
 	if not zeroed:
 		# TODO: error message
@@ -190,7 +193,7 @@ async def reset_access(message: types.Message):
 	await bot.send_message(
 		user_id,
 		txt.access_zeroed_,
-		reply_markup=rkb.new_user
+		reply_markup=kb.reply.new_user
 	)
 
 

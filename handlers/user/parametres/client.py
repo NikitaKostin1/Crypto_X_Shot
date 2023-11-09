@@ -4,6 +4,7 @@ from create_bot import bot
 from config import logger
 from database import parametres as db
 
+from handlers import misc
 from .. import manager
 from . import util
 from entities import (
@@ -17,10 +18,6 @@ from entities.parametres import (
 	Banks, Markets, BidType, AskType,
 	Currencies, Fiat, SignalsType
 )
-from assets import texts as txt
-from keyboards.user import (
-	inline as ikb
-)
 
 
 
@@ -32,6 +29,9 @@ async def menu(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 	await MainMessage.delete(user_id)
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	former_signals_type: SignalsType = await manager.get_parameter(
 		user_id, SignalsType
@@ -58,7 +58,7 @@ async def menu(callback: types.CallbackQuery):
 		await callback.message.answer(txt.error)
 		return
 
-	msg = await callback.message.answer(text, reply_markup=ikb.parametres)
+	msg = await callback.message.answer(text, reply_markup=kb.inline.parametres)
 	await MainMessage.acquire(msg)
 
 
@@ -72,6 +72,9 @@ async def limits(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+
 	is_tester = await manager.is_tester(user_id)
 	if is_tester:
 		await callback.answer(txt.tester_restriction)
@@ -81,7 +84,7 @@ async def limits(callback: types.CallbackQuery):
 	await MainMessage.edit(user_id, await util.parametres_text(user_id))
 
 	msg = await callback.message.answer(
-		txt.limits_info, reply_markup=ikb.back_to_parametres
+		txt.limits_info, reply_markup=kb.inline.back_to_parametres
 	)
 	await AdditionalMessage.acquire(msg)
 
@@ -95,6 +98,9 @@ async def banks(callback: types.CallbackQuery):
 	Retrieves the banks parameter value for the user and displays it with the corresponding markup.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	await callback.answer()
 	await MainMessage.edit(user_id, await util.parametres_text(user_id))
@@ -113,7 +119,7 @@ async def banks(callback: types.CallbackQuery):
 			banks = await manager.get_parameter(user_id, Banks)
 			break
 
-	markup = await ikb.get_parametres_banks(fiat)
+	markup = await kb.inline.get_parametres_banks(fiat)
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), banks.value
 	)
@@ -135,6 +141,9 @@ async def currencies(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+
 	is_tester = await manager.is_tester(user_id)
 	if is_tester:
 		await callback.answer(txt.tester_restriction)
@@ -149,7 +158,7 @@ async def currencies(callback: types.CallbackQuery):
 		await callback.answer(txt.error)
 		return
 
-	markup = await ikb.get_parametres_currencies()
+	markup = await kb.inline.get_parametres_currencies()
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), currencies.value
 	)
@@ -171,6 +180,9 @@ async def markets(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+
 	is_tester = await manager.is_tester(user_id)
 	if is_tester:
 		await callback.answer(txt.tester_restriction)
@@ -185,7 +197,7 @@ async def markets(callback: types.CallbackQuery):
 		await callback.answer(txt.error)
 		return
 
-	markup = await ikb.get_parametres_markets()
+	markup = await kb.inline.get_parametres_markets()
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), markets.value
 	)
@@ -209,8 +221,11 @@ async def spread(callback: types.CallbackQuery):
 	user_id = callback["message"]["chat"]["id"]
 	await MainMessage.edit(user_id, await util.parametres_text(user_id))
 
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+
 	msg = await callback.message.answer(
-		txt.spread_info, reply_markup=ikb.back_to_parametres
+		txt.spread_info, reply_markup=kb.inline.back_to_parametres
 	)
 	await AdditionalMessage.acquire(msg)
 
@@ -224,6 +239,9 @@ async def trading_type(callback: types.CallbackQuery):
 	Retrieves the trading_type parameter value for the user and displays it with the corresponding markup.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	is_tester = await manager.is_tester(user_id)
 	if is_tester:
@@ -241,7 +259,7 @@ async def trading_type(callback: types.CallbackQuery):
 		return
 
 	trading_type = f"{bid_type.value}-{ask_type.value}"
-	markup = ikb.parametres_trading_type
+	markup = kb.inline.parametres_trading_type
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), [trading_type]
 	)
@@ -266,13 +284,16 @@ async def fiat(callback: types.CallbackQuery):
 	await callback.answer()
 	await MainMessage.edit(user_id, await util.parametres_text(user_id))
 
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
+
 	fiat = await manager.get_parameter(user_id, Fiat)
 
 	if not fiat:
 		await callback.answer(txt.error)
 		return
 
-	markup = ikb.parametres_fiat
+	markup = kb.inline.parametres_fiat
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), [fiat.value]
 	)

@@ -346,3 +346,17 @@ async def get_active_users() -> Tuple[User]:
 	except Exception as e:
 		logger.error(e)
 		return tuple()
+
+
+@logger.catch
+async def set_language(user_id: int, language: str) -> bool:
+	""""""
+	try:
+		connection = await get_conn()
+		on_success = await db.set_language(connection, user_id, language)
+
+		return on_success
+	except Exception as e:
+		logger.error(e)
+		return False
+

@@ -5,6 +5,7 @@ import asyncio
 
 from config import logger
 from create_bot import bot
+from handlers import misc
 from handlers.admin import (
 	manager as admin_manager
 )
@@ -13,11 +14,6 @@ from handlers.user import (
 )
 from entities import (
 	Subscriptions, User
-)
-
-from assets import texts as txt
-from keyboards.user import (
-	reply as rkb
 )
 
 
@@ -34,9 +30,10 @@ async def tester(wait_for: int):
 
 		for user in users:
 			is_expired = await user_manager.is_tester_expired(user.user_id)
-			if is_expired:
 
+			if is_expired:
 				access_closed = await admin_manager.set_tester_as_expired(user.user_id)
+
 				if not access_closed:
 					# TODO: Error message
 					await bot.send_message(
@@ -44,6 +41,7 @@ async def tester(wait_for: int):
 					)
 
 				try:
+					txt = await misc.get_language_module(user_id)
 					await bot.send_message(
 						user.user_id, txt.tester_expired, 
 						reply_markup=rkb.subscription_expired
@@ -70,8 +68,9 @@ async def premium_subscriptions(wait_for: int):
 			is_expired = await user_manager.is_subscription_expired(user.user_id)
 
 			if is_expired:
-				# TODO: Turn off the bot
+				txt = await misc.get_language_module(user_id)
 				access_closed = await admin_manager.set_subscription_as_expired(user.user_id)
+
 				if not access_closed:
 					# TODO: Error message
 					await bot.send_message(

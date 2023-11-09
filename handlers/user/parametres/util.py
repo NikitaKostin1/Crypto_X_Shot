@@ -5,15 +5,11 @@ from typing import Union, List
 from create_bot import bot
 from config import logger
 
+from handlers import misc
 from .. import manager
 from entities import (
 	MainMessage, AdditionalMessage,
 	Parametres, Parameter
-)
-from assets import texts as txt
-from keyboards.user import (
-	reply as rkb,
-	inline as ikb
 )
 
 
@@ -24,12 +20,13 @@ async def parametres_text(user_id: int) -> str:
 	Return the formatted text for the parametres message based on the user's parameters.
 	"""
 	params: Parametres = await manager.get_user_parametres(user_id)
+	txt = await misc.get_language_module(user_id)
 
 	if not params:
 		return None
 
 	parametres_text = txt.parametres.format(
-		limits="Любая" if not params.limits.value else f"{params.limits.value:,}₽",
+		limits=txt.any_limits if not params.limits.value else f"{params.limits.value:,}{params.fiat.symbol}",
 		banks=" | ".join(params.banks.value),
 		currencies=" | ".join(params.currencies.value),
 		markets=" | ".join(params.markets.value),
@@ -62,7 +59,8 @@ async def back_to_parametres(user_id_or_query: Union[int, types.CallbackQuery], 
 	if not parametres_message:
 		return
 
-	await MainMessage.edit(user_id, parametres_message, reply_markup=ikb.parametres)
+	kb = await misc.get_keyboard_module(user_id)
+	await MainMessage.edit(user_id, parametres_message, reply_markup=kb.inline.parametres)
 	
 
 @logger.catch
@@ -74,6 +72,7 @@ async def save_parameter(user_id: int, new_param: Parameter) -> bool:
 	await back_to_parametres(user_id)
 
 	if not updated:
+		txt = await misc.get_language_module(user_id)
 		await bot.send_message(user_id, txt.error)
 
 
@@ -92,7 +91,7 @@ def mark_markup_chosen_buttons(markup: dict, chosen_values: List[str]) -> dict:
 		for btn_ndx in range(len(markup["inline_keyboard"][row_ndx])):
 
 			market_btn = markup["inline_keyboard"][row_ndx][btn_ndx]["text"].split()[0]
-			if market_btn == "Готово":
+			if market_btn == "Готово" or market_btn == "Complete":
 				continue
 
 			if market_btn in chosen_values:

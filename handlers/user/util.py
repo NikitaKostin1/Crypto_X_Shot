@@ -8,18 +8,15 @@ from aiogram import types
 from datetime import datetime, timedelta
 
 from config import logger
+from handlers import misc
 from create_bot import bot
 from ..admin import manager as admin_manager
 from . import manager
 
-from assets import texts as txt
 from entities import (
 	MainMessage, 
 	User, Subscriptions,
 	StandardParametres
-)
-from keyboards.user import (
-	reply as rkb
 )
 
 
@@ -98,20 +95,22 @@ async def determine_reply_markup(user_id: int) -> ReplyKeyboardMarkup:
 	"""
 	Determines the appropriate reply keyboard markup based on the user's status.
 	"""
+	kb = await misc.get_keyboard_module(user_id)
+
 	if await manager.is_tester(user_id):
-		return rkb.tester
+		return kb.reply.tester
 
 	if await manager.is_subscription_active(user_id):
 		if await manager.is_subscription_expired(user_id):
-			return rkb.subscription_expired
-		return rkb.active_subscription
+			return kb.reply.subscription_expired
+		return kb.reply.active_subscription
 
 	if await manager.is_tester_expired(user_id):
-		return rkb.subscription_expired
+		return kb.reply.subscription_expired
 	if await manager.is_subscription_expired(user_id):
-			return rkb.subscription_expired
+			return kb.reply.subscription_expired
 
-	return rkb.new_user
+	return kb.reply.new_user
 
 
 
@@ -126,6 +125,9 @@ async def activate_test_drive(callback: types.CallbackQuery):
 	user_id = callback["message"]["chat"]["id"]
 	await callback.answer()
 	await MainMessage.delete(user_id)
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	user = await manager.get_user(user_id)
 
@@ -143,9 +145,10 @@ async def activate_test_drive(callback: types.CallbackQuery):
 		subscription_id=Subscriptions.tester.subscription_id,
 		subscription_begin_date=datetime.now(),
 		is_test_active=True,
-		test_begin_date=datetime.now()
+		test_begin_date=datetime.now(),
+		language=user.language
 	)
-	markup = rkb.tester
+	markup = kb.reply.tester
 	text = txt.tester_activated
 
 	user_updated = await admin_manager.update_user(new_user)
@@ -166,3 +169,32 @@ async def activate_test_drive(callback: types.CallbackQuery):
 		text, reply_markup=markup
 	)
 	await MainMessage.acquire(msg)
+
+
+@logger.catch
+async def set_language(callback: types.CallbackQuery):
+    """
+    Set the language preference for a user in response to a callback query.
+
+    Args:
+        callback (types.CallbackQuery): The callback query received.
+
+    This function extracts the user's language preference from the callback query and
+    sets it for the user. It then sends a confirmation message to the user.
+    """
+	user_id = callback["message"]["chat"]["id"]
+	language: str = callback["data"].split()[1]
+	await callback.message.delete()
+
+	language_is_set = await manager.set_language(user_id, language)
+
+	markup = await determine_reply_markup(user_id)
+	txt = await misc.get_language_module(user_id)
+
+	await callback.message.answer(
+		txt.language_is_set.format(
+			language=language
+		),
+		reply_markup=markup
+	)
+

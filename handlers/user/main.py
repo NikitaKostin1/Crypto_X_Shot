@@ -19,19 +19,21 @@ def register_commands_handlers(dp: Dispatcher):
 	"""
 	# COMMANDS
 	dp.register_message_handler(client.start, commands=["start"], state="*", chat_type=types.ChatType.PRIVATE)
+	dp.register_message_handler(client.language, commands=["language"], chat_type=types.ChatType.PRIVATE)
 
 	# REPLY KEYBOARD
 	# dp.register_message_handler(client.channel, lambda message: message.text == "🖊 Канал", state="*", chat_type=types.ChatType.PRIVATE)
 	dp.register_message_handler(client.support, lambda message: message.text == "🫡 SUPPORT 🫡", state="*", chat_type=types.ChatType.PRIVATE)
-	dp.register_message_handler(client.rates, lambda message: message.text == "🎯 АКТИВИРОВАТЬ SHOT 🎯", state="*", chat_type=types.ChatType.PRIVATE)
+	dp.register_message_handler(client.rates, lambda message: message.text == "🎯 АКТИВИРОВАТЬ SHOT 🎯" or message.text == "🎯 Activate SHOT 🎯", state="*", chat_type=types.ChatType.PRIVATE)
 	# dp.register_message_handler(client.profile, lambda message: message.text == "👤 Профиль", state="*", chat_type=types.ChatType.PRIVATE)
 
-	dp.register_message_handler(client.switch_bot_state, lambda message: message.text == "🔔 Вкл/Выкл", state="*", chat_type=types.ChatType.PRIVATE)
-	dp.register_message_handler(client.parametres, lambda message: message.text == "⚙️ Настройки", state="*", chat_type=types.ChatType.PRIVATE)
+	dp.register_message_handler(client.switch_bot_state, lambda message: message.text == "🔔 Вкл/Выкл" or message.text == "🔔 On/Off", state="*", chat_type=types.ChatType.PRIVATE)
+	dp.register_message_handler(client.parametres, lambda message: message.text == "⚙️ Настройки" or message.text == "⚙️ Settings", state="*", chat_type=types.ChatType.PRIVATE)
 	dp.register_message_handler(client.test_drive, lambda message: message.text == "🎈 TEST DRIVE 🎈", state="*", chat_type=types.ChatType.PRIVATE)
 
 	# CALLBACKS
 	dp.register_callback_query_handler(util.activate_test_drive, lambda query: query.data == "test_drive", chat_type=types.ChatType.PRIVATE)
+	dp.register_callback_query_handler(util.set_language, lambda query: query.data.startswith("set_language"), chat_type=types.ChatType.PRIVATE)
 
 	# PARAMETRES
 	dp.register_callback_query_handler(parametres.util.back_to_parametres, lambda query: query.data == "back_to_parametres", state="*", chat_type=types.ChatType.PRIVATE)

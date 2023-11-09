@@ -6,6 +6,7 @@ from create_bot import bot
 
 from . import input_checkers as checker
 
+from handlers import misc
 from ... import manager
 from .. import util
 from entities import (
@@ -15,11 +16,6 @@ from entities import (
 from entities.parametres import (
 	Limits, Spread
 )
-from assets import texts as txt
-from keyboards.user import (
-	inline as ikb
-)
-
 
 
 
@@ -31,12 +27,13 @@ async def limits(message: types.Message, state: FSMContext):
 	user_id = message["from"]["id"]
 	user_input = message["text"]
 
-	result = await checker.limits(user_input)
+	kb = await misc.get_keyboard_module(user_id)
+	result = await checker.limits(user_id, user_input)
 
 	if isinstance(result, InputError):
 		msg = await message.answer(
 			result.message,
-			reply_markup=ikb.back_to_parametres
+			reply_markup=kb.inline.back_to_parametres
 		)
 		await AdditionalMessage.acquire(msg)
 		return
@@ -55,12 +52,13 @@ async def spread(message: types.Message, state: FSMContext):
 	user_id = message["from"]["id"]
 	user_input = message["text"]
 
+	kb = await misc.get_keyboard_module(user_id)
 	result = await checker.spread(user_id, user_input)
 
 	if isinstance(result, InputError):
 		msg = await message.answer(
 			result.message,
-			reply_markup=ikb.back_to_parametres
+			reply_markup=kb.inline.back_to_parametres
 		)
 		await AdditionalMessage.acquire(msg)
 		return

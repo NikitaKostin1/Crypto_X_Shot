@@ -1,3 +1,5 @@
+language_menu = "Выберите язык чтобы изменить настройки бота"
+
 faq = """ \
 <b>Crypto Shot</b> — это инструмент для заработка в P2P индустрии. <b>Crypto Shot</b> является инновационным сканером на рынке Р2Р, межбиржевого и внутрибиржевого арбитража криптовалют! 
 
@@ -9,9 +11,7 @@ faq = """ \
 ▫️ Доступ ко всем мировым платёжным системам и банкам
 """
 
-# channel_link = "🔘 <b>Ссылка на канал</b> - In process"  # deprecated
 support_link = """🔘 <a href="https://t.me/CRYPTO_SHOT_SUPPORT"><b>Support</b></a> 🔘"""
-
 
 rates = """
 🔘 <b><u>CRYPTO SHOT</u></b> 🔘
@@ -26,30 +26,6 @@ rates = """
 
 <b><u>Стоимость CRYPTO SHOT и возможные способы оплаты уточняйте у специалистов поддержки</u></b> 🛡️
 """
-
-
-# profile = """ \
-# 👤 <b>ВАШ ПРОФИЛЬ Crypto Shot</b>: 
-
-# <b>Тариф:</b> <i>PREMIUM</i>
-# <b>Дата окончания подписки:</b> {expiration_date}
-# <b>Осталось дней:</b> {days_left}
-
-# _______________________________________
-
-# <b>МАТЕРИАЛЫ ДЛЯ РАБОТЫ:</b>
-
-# 📔 <b><a href="https://telegra.ph/Obuchenie-P2P-07-18">MANUAL по Р2Р</a></b>
-# 📚 <b><a href="">GUIDE по Crypto_X_Shot</a></b>
-# 🔂 <b><a href="https://telegra.ph/Paki-iz-150-mezhdunarodnyh-svyazok-09-04">150 МЕЖДУНАРОДНЫХ СВЯЗОК</a></b>
-
-# <b>ПАНЕЛЬ ИНСТРУМЕНТОВ:</b>
-
-# 📰 <b><a href="">КАНАЛ</a></b>
-# 🤝 <b><a href="https://telegra.ph/PARTNERSKAYA-PROGRAMMA-09-01">ПАРТНЕРСКАЯ ПРОГРАММА</a></b>
-# 🔊 <b><a href="">ОТЗЫВЫ</a></b>
-# 👁‍🗨 <b><a href="">СВЯЗЬ</a></b>
-# """  # deprecated
 
 test_drive = """
 Тестовый период <b>Crypto Shot</b> имеет ограниченный функционал. 

@@ -4,16 +4,12 @@ from aiogram.utils.exceptions import (
 	MessageToEditNotFound, MessageNotModified
 )
 
+from handlers import misc
 from handlers.user import manager as user_manager
 from database import parametres as db
-from assets import texts as txt
 from create_bot import bot
 from config import logger
 import asyncio
-
-from keyboards.user import (
-	inline as ikb
-)
 
 from typing import (
 	NoReturn, Union, Tuple
@@ -46,6 +42,7 @@ async def notificate_user(user_id: int) -> NoReturn:
 	Send a notification to the user about inefficient parameters
 	"""
 	try:
+		txt = await misc.get_language_module(user_id)
 		await bot.send_message(user_id, txt.inefficient_parametres)
 	except BotBlocked:
 		await user_manager.disable_bot(user_id)
@@ -118,6 +115,8 @@ async def send_signal(
 	# Define the threshold for identifying scam spreads
 	scam_spread = 7
 
+	txt = await misc.get_language_module(user_id)
+
 	bid_price = bid.conditions.price
 	ask_price = ask.conditions.price
 	spread = round((1 - bid_price / ask_price) * 100, 2)
@@ -162,7 +161,7 @@ async def send_signal(
 		fiat_symbol=fiat_symbol
 	)
 
-	markup = await generate_markup(bid, ask)
+	markup = await generate_markup(user_id, bid, ask)
 
 	try:
 		if signal_index >= len(former_signals):
@@ -282,7 +281,7 @@ async def iterate_advertisments(
 
 @logger.catch
 async def generate_markup(
-	bid: Advertisement, ask: Advertisement
+	user_id: int, bid: Advertisement, ask: Advertisement
 ) -> InlineKeyboardMarkup: 
 	"""
 	Generate an inline keyboard markup for the bid and ask responses
@@ -320,4 +319,6 @@ async def generate_markup(
 	except KeyError:
 		return None
 
-	return ikb.get_signal_keyboard(bid_url, ask_url)
+	kb = await misc.get_keyboard_module(user_id)
+
+	return kb.inline.get_signal_keyboard(bid_url, ask_url)

@@ -3,7 +3,6 @@ from typing import Union, List, Tuple
 from config import logger
 
 from .input_error import InputError
-from assets.texts import user as txt
 
 import asyncio
 
@@ -128,12 +127,22 @@ class Currencies(Parameter):
 
 @dataclass
 class Fiat(Parameter):
+	_available_symbols = {
+		"RUB": "₽", "EUR": "€", "USD": "$", "GBP": "£",
+		"UAH": "₴", "BYN": "Br", "KZT": "₸", "TRY": "₺" 
+	}
+
 	value: str
 	title: str = "fiat"
 	available_values: List[str] = field(default_factory=lambda: [
 		"RUB", "EUR", "USD", "GBP",
 		"UAH", "BYN", "KZT", "TRY"
 	])  # TODO: move to databse
+	symbol: str = ""
+
+	def __post_init__(self):
+		self.symbol = self._available_symbols.get(self.value, "")
+
 
 @dataclass
 class SignalsType(Parameter):
@@ -215,8 +224,9 @@ class TesterParametresChecker:
 	"""
 	Checker for Tester subscription restrictions.
 	"""
-	def __init__(self, *args: Union[Parameter, Tuple[Parameter]]):
+	def __init__(self, user_id: int, *args: Union[Parameter, Tuple[Parameter]]):
 		self.args = args
+		self.user_id = user_id
 
 
 	@logger.catch
@@ -243,6 +253,9 @@ class TesterParametresChecker:
 			- BidType: The value should be "Taker". Otherwise, an InputError is returned.
 			- AskType: The value should be "Maker". Otherwise, an InputError is returned.
 		"""
+		from handlers import misc
+		txt = misc.get_language_module(self.user_id)
+
 		for param in self.args:
 			if isinstance(param, Limits):
 				if not isinstance(param.value, None):

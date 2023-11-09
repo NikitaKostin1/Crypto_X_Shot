@@ -4,6 +4,7 @@ from create_bot import bot
 from config import logger
 from database import parametres as db
 
+from handlers import misc
 from ... import manager
 from .. import util
 from entities import (
@@ -13,11 +14,6 @@ from entities import (
 from entities.parametres import (
 	Banks, Markets, BidType, AskType,
 	Currencies, Fiat
-)
-
-from assets import texts as txt
-from keyboards.user import (
-	inline as ikb
 )
 
 
@@ -32,6 +28,9 @@ async def banks(callback: types.CallbackQuery):
 
 	button_value = callback["data"].split()[1]
 	message = await AdditionalMessage.get_message(user_id)
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	if not message:
 		await callback.message.delete()
@@ -58,7 +57,7 @@ async def banks(callback: types.CallbackQuery):
 		chosen_banks.append(bank)
 
 
-	markup = await ikb.get_parametres_banks(fiat)
+	markup = await kb.inline.get_parametres_banks(fiat)
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), chosen_banks
 	)
@@ -78,6 +77,9 @@ async def currencies(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 	await callback.answer()
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	button_value = callback["data"].split()[1]
 	message = await AdditionalMessage.get_message(user_id)
@@ -105,7 +107,7 @@ async def currencies(callback: types.CallbackQuery):
 	else:
 		chosen_currencies.append(currency)
 
-	markup = await ikb.get_parametres_currencies()
+	markup = await kb.inline.get_parametres_currencies()
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), chosen_currencies
 	)
@@ -126,6 +128,9 @@ async def markets(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 	await callback.answer()
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	button_value = callback["data"].split()[1]
 	message = await AdditionalMessage.get_message(user_id)
@@ -154,7 +159,7 @@ async def markets(callback: types.CallbackQuery):
 	else:
 		chosen_markets.append(market)
 
-	markup = await ikb.get_parametres_markets()
+	markup = await kb.inline.get_parametres_markets()
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), chosen_markets
 	)
@@ -175,6 +180,9 @@ async def trading_type(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 	await callback.answer()
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	button_value = callback["data"].split()[1]
 	message = await AdditionalMessage.get_message(user_id)
@@ -198,7 +206,7 @@ async def trading_type(callback: types.CallbackQuery):
 		trading_type = button_value
 		bid_type, ask_type = trading_type.split("-")
 
-	markup = ikb.parametres_trading_type
+	markup = kb.inline.parametres_trading_type
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), trading_type
 	)
@@ -218,6 +226,9 @@ async def fiat(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 	await callback.answer()
+
+	txt = await misc.get_language_module(user_id)
+	kb = await misc.get_keyboard_module(user_id)
 
 	button_value = callback["data"].split()[1]
 	message = await AdditionalMessage.get_message(user_id)
@@ -240,12 +251,10 @@ async def fiat(callback: types.CallbackQuery):
 	else:
 		fiat = Fiat(button_value)
 
-	# markup = await ikb.get_parametres_banks(fiat)
-	markup = ikb.parametres_fiat
+	markup = kb.inline.parametres_fiat
 	edited_markup = util.mark_markup_chosen_buttons(
 		dict(markup).copy(), fiat.value
 	)
-
 
 	message_text = txt.fiat_info.format(fiat=fiat.value)
 	msg = await AdditionalMessage.edit(

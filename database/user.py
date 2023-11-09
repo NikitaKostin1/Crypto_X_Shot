@@ -16,13 +16,13 @@ async def is_user_exists(connection: Connection, user_id: int) -> bool:
 	Checks if a user exists in the database by user_id
 	"""
 	record = await connection.fetchrow(
-		f"SELECT * FROM users WHERE user_id = {user_id};"
+		f"SELECT user_id FROM users WHERE user_id = {user_id};"
 	)
 	return bool(record)
 
 
 @logger.catch
-async def get_user(connection: Connection, user_id: int) -> User:
+async def get_user(connection: Connection, user_id: int) -> User|None:
 	"""
 	Returns a User object from the users table.
 	Returns None in case of an error.
@@ -42,7 +42,8 @@ async def get_user(connection: Connection, user_id: int) -> User:
 			subscription_id=record.get("subscription_id"),
 			subscription_begin_date=record.get("subscription_begin_date"),
 			is_test_active=record.get("is_test_active"),
-			test_begin_date=record.get("test_begin_date")
+			test_begin_date=record.get("test_begin_date"),
+			language=record.get("language"),
 		)
 
 		return user
@@ -52,7 +53,7 @@ async def get_user(connection: Connection, user_id: int) -> User:
 
 
 @logger.catch
-async def get_users(connection: Connection) -> Tuple[User]:
+async def get_users(connection: Connection) -> Tuple[User]|None:
 	"""
 	Retrieve the tuple of User objects from the users table.
 	Returns:
@@ -75,7 +76,8 @@ async def get_users(connection: Connection) -> Tuple[User]:
 				subscription_id=record.get("subscription_id"),
 				subscription_begin_date=record.get("subscription_begin_date"),
 				is_test_active=record.get("is_test_active"),
-				test_begin_date=record.get("test_begin_date")
+				test_begin_date=record.get("test_begin_date"),
+				language=record.get("language"),
 			)
 			users.append(user)
 
@@ -86,7 +88,7 @@ async def get_users(connection: Connection) -> Tuple[User]:
 
 
 @logger.catch
-async def get_user_parametres(connection: Connection, user_id: int) -> Parametres:
+async def get_user_parametres(connection: Connection, user_id: int) -> Parametres|None:
 	"""
 	Returns a Parametres object from the users_parametres table.
 	Returns None in case of an error.
@@ -116,7 +118,7 @@ async def get_user_parametres(connection: Connection, user_id: int) -> Parametre
 
 
 @logger.catch
-async def get_parameter(connection: Connection, user_id: int, ParameterType: Parameter) -> Parameter:
+async def get_parameter(connection: Connection, user_id: int, ParameterType: Parameter) -> Parameter|None:
 	"""
 	Retrieves a specific parameter value for a user from the database.
 
@@ -156,10 +158,11 @@ async def set_new_user(connection: Connection, user: User) -> bool:
 			BEGIN TRANSACTION ISOLATION LEVEL repeatable read;
 			INSERT INTO users (
 				user_id, username, entry_date, is_bot_on, 
-				is_subscription_active, is_test_active
+				is_subscription_active, is_test_active, language
 			) VALUES(
 				{user.user_id}, '{user.username}',
-				'{user.entry_date}', false, false, false
+				'{user.entry_date}', false, false, 
+				false, '{user.language}'
 			);
 			INSERT INTO users_parametres VALUES(
 				{user.user_id}, 
@@ -327,7 +330,8 @@ async def get_active_users(connection: Connection) -> Tuple[User]:
 				subscription_id=record.get("subscription_id"),
 				subscription_begin_date=record.get("subscription_begin_date"),
 				is_test_active=record.get("is_test_active"),
-				test_begin_date=record.get("test_begin_date")
+				test_begin_date=record.get("test_begin_date"),
+				language=record.get("language")
 			)
 			active_users.append(user)
 
@@ -336,3 +340,44 @@ async def get_active_users(connection: Connection) -> Tuple[User]:
 	except Exception as e:
 		logger.error(e)
 		return tuple()
+
+
+@logger.catch
+async def get_language(connection: Connection, user_id: int) -> str|None:
+	"""
+
+	"""
+	try:
+		language = await connection.fetchval(f"""
+			SELECT language FROM users
+			WHERE user_id = {user_id};
+		""")
+
+		return language
+	except Exception as e:
+		logger.error(e)
+		return None
+
+
+
+@logger.catch
+async def set_language(
+	connection: Connection, user_id: int, 
+	language: str) -> bool:
+	"""
+
+	"""
+	try:
+		await connection.execute(f"""
+			BEGIN TRANSACTION ISOLATION LEVEL repeatable read;
+			UPDATE users
+			SET 
+				language = '{language}'
+			WHERE user_id = {user_id};
+			COMMIT;
+		""")
+
+		return True
+	except Exception as e:
+		logger.error(e)
+		return False
