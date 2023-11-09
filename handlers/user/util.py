@@ -173,15 +173,15 @@ async def activate_test_drive(callback: types.CallbackQuery):
 
 @logger.catch
 async def set_language(callback: types.CallbackQuery):
-    """
-    Set the language preference for a user in response to a callback query.
+	"""
+	Set the language preference for a user in response to a callback query.
 
-    Args:
-        callback (types.CallbackQuery): The callback query received.
+	Args:
+		callback (types.CallbackQuery): The callback query received.
 
-    This function extracts the user's language preference from the callback query and
-    sets it for the user. It then sends a confirmation message to the user.
-    """
+	This function extracts the user's language preference from the callback query and
+	sets it for the user. It then sends a confirmation message to the user.
+	"""
 	user_id = callback["message"]["chat"]["id"]
 	language: str = callback["data"].split()[1]
 	await callback.message.delete()
