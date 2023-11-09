@@ -42,16 +42,16 @@ async def _get_language_string(user_id: int) -> Union[str, None]:
 
 @logger.catch
 async def get_language_module(user_id: int, default_lang: str="ru"):
-    """
-    Get the language module for a user.
+	"""
+	Get the language module for a user.
 
-    Args:
-        user_id (int): The ID of the user.
-        default_lang (str): The default language if the user's language is not found.
+	Args:
+		user_id (int): The ID of the user.
+		default_lang (str): The default language if the user's language is not found.
 
-    Returns:
-        The language module for the user or the default language module.
-    """
+	Returns:
+		The language module for the user or the default language module.
+	"""
 	language_string = await _get_language_string(user_id)
 
 	if module := lang_modules.get(language_string):
@@ -63,16 +63,16 @@ async def get_language_module(user_id: int, default_lang: str="ru"):
 
 @logger.catch
 async def get_keyboard_module(user_id: int, default_lang: str="ru"):
-    """
-    Get the keyboard module for a user.
+	"""
+	Get the keyboard module for a user.
 
-    Args:
-        user_id (int): The ID of the user.
-        default_lang (str): The default language if the user's language is not found.
+	Args:
+		user_id (int): The ID of the user.
+		default_lang (str): The default language if the user's language is not found.
 
-    Returns:
-        The keyboard module for the user or the default keyboard module.
-    """
+	Returns:
+		The keyboard module for the user or the default keyboard module.
+	"""
 	language_string = await _get_language_string(user_id)
 
 	if module := kb_modules.get(language_string):
