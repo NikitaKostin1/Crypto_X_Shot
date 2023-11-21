@@ -96,4 +96,3 @@ fiat_info = """
 Choose a fiat currency suitable for you: 
 • {fiat}
 """
-

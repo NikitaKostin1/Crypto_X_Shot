@@ -254,7 +254,7 @@ async def mailing(message: types.Message):
 
 
 @logger.catch
-async def clear_signals(message: types.Message):
+async def clear_signals(_=None):
 	"""
 	Deletes all signal messages at every user
 	and cleans signals storage
@@ -277,5 +277,3 @@ async def clear_signals(message: types.Message):
 
 		logger.success(f"{user_id}: Deleted {deleted_amount}/{len(signals)}")
 		storage[user_id] = tuple()
-
-

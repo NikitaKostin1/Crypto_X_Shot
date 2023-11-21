@@ -38,7 +38,6 @@ Your subscription to <b>Crypto Shot</b> is over!
 We hope you have studied the functionality and assessed the potential of <b>Crypto Shot</b>.
 """
 
-
 access_zeroed_ = """
 Your access has been successfully reset!
 """

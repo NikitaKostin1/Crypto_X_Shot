@@ -13,7 +13,6 @@ faq = """ \
 
 support_link = """🔘 <a href="https://t.me/CRYPTO_SHOT_SUPPORT"><b>Support</b></a> 🔘"""
 
-
 rates = """
 🔘 <b><u>CRYPTO SHOT</u></b> 🔘
 

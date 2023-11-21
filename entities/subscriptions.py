@@ -39,7 +39,7 @@ class Tester(Subscription):
 	subscription_id: int = 0
 	term: Union[timedelta, None] = timedelta(hours=1)
 
-	title: str = "Тестер"
+	title: str = "Tester"
 	description: str = ""  # TODO: write and import description
 	price: float = 0.00
 
@@ -57,7 +57,7 @@ class OneMonth(Subscription):
 	subscription_id: int = 1
 	term: Union[timedelta, None] = timedelta(days=30)
 
-	title: str = "1 месяц"
+	title: str = "1 month"
 	description: str = ""  # TODO: write and import description
 	price: float = 2499.00
 
@@ -75,7 +75,7 @@ class ThreeMonths(Subscription):
 	subscription_id: int = 2
 	term: Union[timedelta, None] = timedelta(days=90)
 
-	title: str = "3 месяца"
+	title: str = "3 months"
 	description: str = ""  # TODO: write and import description
 	price: float = 4999.00
 	
@@ -92,7 +92,7 @@ class TwelveMonths(Subscription):
 	subscription_id: int = 3
 	term: Union[timedelta, None] = timedelta(days=365)
 
-	title: str = "12 месяцев"
+	title: str = "12 months"
 	description: str = ""  # TODO: write and import description
 	price: float = 9999.00
 	
@@ -110,7 +110,7 @@ class Unlimited(Subscription):
 	subscription_id: int = 4
 	term: Union[timedelta, None] = None
 
-	title: str = "Бессрочно"
+	title: str = "Unlimited"
 	description: str = ""  # TODO: write and import description
 	price: float = 19999.00
 	

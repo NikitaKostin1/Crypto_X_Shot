@@ -230,7 +230,7 @@ class TesterParametresChecker:
 
 
 	@logger.catch
-	def check(self) -> Union[Parameter, InputError]:
+	async def check(self) -> Union[Parameter, InputError]:
 		"""
 		Check if the parameter values match the Tester subscription restrictions.
 
@@ -254,7 +254,7 @@ class TesterParametresChecker:
 			- AskType: The value should be "Maker". Otherwise, an InputError is returned.
 		"""
 		from handlers import misc
-		txt = misc.get_language_module(self.user_id)
+		txt = await misc.get_language_module(self.user_id)
 
 		for param in self.args:
 			if isinstance(param, Limits):

@@ -151,7 +151,6 @@ class MessageHandler:
 			return False
 
 		message = self.storage[user_id]	
-		# message_id = message["message_id"]
 
 		try:
 			await message.edit_media(

@@ -1,5 +1,4 @@
 from aiogram.utils.exceptions import BotBlocked
-from datetime import timedelta
 from typing import List
 import asyncio
 
@@ -52,7 +51,6 @@ async def tester(wait_for: int):
 		await asyncio.sleep(wait_for)
 
 
-
 @logger.catch
 async def premium_subscriptions(wait_for: int):
 	"""
@@ -96,4 +94,3 @@ async def premium_subscriptions(wait_for: int):
 					pass
 
 		await asyncio.sleep(wait_for)
-
