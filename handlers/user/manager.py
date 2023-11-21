@@ -25,6 +25,47 @@ async def is_user_exists(user_id: int) -> bool:
 		logger.error(f"{user_id}: {e}")
 		return False
 
+@logger.catch
+async def is_admin(user_id: int) -> bool:
+	"""
+	Checks if the specified user is an admin.
+
+	Returns:
+		bool: True if the user is an admin, False otherwise.
+	"""
+	try:
+		# Establish a database connection
+		connection = await get_conn()
+
+		# Check if the user is an admin in the database
+		is_admin: bool = await db.is_admin(connection, user_id)
+
+		return is_admin
+	except Exception as e:
+		logger.error(e)
+		return False
+
+
+@logger.catch
+async def is_chat(user_id: int) -> bool:
+	"""
+	Checks if the specified user is associated with a chat.
+
+	Returns:
+		bool: True if the user is associated with a chat, False otherwise.
+	"""
+	try:
+		# Establish a database connection
+		connection = await get_conn()
+
+		# Check if the user is associated with a chat in the database
+		is_chat: bool = await db.is_chat(connection, user_id)
+
+		return is_chat
+	except Exception as e:
+		logger.error(e)
+		return False
+
 
 @logger.catch
 async def get_user(user_id: int) -> User:
@@ -61,7 +102,7 @@ async def get_users() -> Tuple[User]:
 
 
 @logger.catch
-async def set_new_user(user: User) -> bool:
+async def create_user(user: User) -> bool:
 	"""
 	Insert the user's data into the database.
 	"""
@@ -74,7 +115,7 @@ async def set_new_user(user: User) -> bool:
 	try:
 		user.entry_date = datetime.now()
 		connection = await get_conn()
-		registered = await db.set_new_user(connection, user)
+		registered = await db.create_user(connection, user)
 
 		return registered
 	except Exception as e:
@@ -234,8 +275,8 @@ async def is_subscription_expired(user_id: int) -> bool:
 @logger.catch
 async def is_tester(user_id: int) -> bool:
 	"""
- 	Check if the user is a tester.
- 	"""
+	Check if the user is a tester.
+	"""
 	try:
 		user = await get_user(user_id)
 
@@ -346,6 +387,20 @@ async def get_active_users() -> Tuple[User]:
 	except Exception as e:
 		logger.error(e)
 		return tuple()
+
+
+# @logger.catch
+# async def get_active_chats() -> Tuple[User]:
+# 	"""
+# 	"""
+# 	try:
+# 		connection = await get_conn()
+# 		active_users = await db.get_active_users(connection)
+
+# 		return active_users
+# 	except Exception as e:
+# 		logger.error(e)
+# 		return tuple()
 
 
 @logger.catch

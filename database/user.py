@@ -22,6 +22,44 @@ async def is_user_exists(connection: Connection, user_id: int) -> bool:
 
 
 @logger.catch
+async def is_admin(connection: Connection, user_id: int) -> bool:
+	"""
+	Checks if a user is an admin based on the provided user ID.
+
+	Returns:
+		bool: True if the user is an admin, False otherwise.
+	"""
+	try:
+		record = await connection.fetchrow(
+			f"SELECT admin_id FROM admins WHERE admin_id = {user_id};"
+		)
+
+		return bool(record)
+	except Exception as e:
+		logger.error(e)
+		return False
+
+
+@logger.catch
+async def is_chat(connection: Connection, user_id: int) -> bool:
+	"""
+	Checks if a user is associated with a chat (non-private) based on the provided user ID.
+
+	Returns:
+		bool: True if the user is associated with a chat, False otherwise.
+	"""
+	try:
+		record = await connection.fetchrow(
+			f"SELECT chat_type FROM users WHERE user_id = {user_id};"
+		)
+
+		return record.get("chat_type") != "private"
+	except Exception as e:
+		logger.error(e)
+		return False
+
+
+@logger.catch
 async def get_user(connection: Connection, user_id: int) -> User|None:
 	"""
 	Returns a User object from the users table.
@@ -144,7 +182,7 @@ async def get_parameter(connection: Connection, user_id: int, ParameterType: Par
 
 
 @logger.catch
-async def set_new_user(connection: Connection, user: User) -> bool:
+async def create_user(connection: Connection, user: User) -> bool:
 	"""
 	Inserts a new user into the database.
 	"""
@@ -158,11 +196,12 @@ async def set_new_user(connection: Connection, user: User) -> bool:
 			BEGIN TRANSACTION ISOLATION LEVEL repeatable read;
 			INSERT INTO users (
 				user_id, username, entry_date, is_bot_on, 
-				is_subscription_active, is_test_active, language
+				is_subscription_active, is_test_active, 
+				language, chat_type
 			) VALUES(
 				{user.user_id}, '{user.username}',
 				'{user.entry_date}', false, false, 
-				false, '{user.language}'
+				false, '{user.language}', '{user.chat_type}'
 			);
 			INSERT INTO users_parametres VALUES(
 				{user.user_id}, 
@@ -331,7 +370,7 @@ async def get_active_users(connection: Connection) -> Tuple[User]:
 				subscription_begin_date=record.get("subscription_begin_date"),
 				is_test_active=record.get("is_test_active"),
 				test_begin_date=record.get("test_begin_date"),
-				language=record.get("language")
+				language=record.get("language"),
 			)
 			active_users.append(user)
 
@@ -345,7 +384,7 @@ async def get_active_users(connection: Connection) -> Tuple[User]:
 @logger.catch
 async def get_language(connection: Connection, user_id: int) -> str|None:
 	"""
-
+	Get the language preference of a user from the database.
 	"""
 	try:
 		language = await connection.fetchval(f"""
@@ -359,13 +398,15 @@ async def get_language(connection: Connection, user_id: int) -> str|None:
 		return None
 
 
-
 @logger.catch
 async def set_language(
 	connection: Connection, user_id: int, 
 	language: str) -> bool:
 	"""
+	Set the language preference of a user.
 
+	Returns:
+		bool: True if the language was successfully set, False otherwise
 	"""
 	try:
 		await connection.execute(f"""

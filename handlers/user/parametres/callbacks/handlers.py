@@ -13,7 +13,7 @@ from entities import (
 )
 from entities.parametres import (
 	Banks, Markets, BidType, AskType,
-	Currencies, Fiat
+	Currencies, Fiat, Limits
 )
 
 
@@ -24,6 +24,10 @@ async def banks(callback: types.CallbackQuery):
 	Handle the callback for banks and check its validity.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
+
 	await callback.answer()
 
 	button_value = callback["data"].split()[1]
@@ -76,6 +80,10 @@ async def currencies(callback: types.CallbackQuery):
 	Handle the callback for currencies and check its validity.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
+
 	await callback.answer()
 
 	txt = await misc.get_language_module(user_id)
@@ -127,6 +135,10 @@ async def markets(callback: types.CallbackQuery):
 	Handle the callback for markets and check its validity.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
+
 	await callback.answer()
 
 	txt = await misc.get_language_module(user_id)
@@ -179,6 +191,10 @@ async def trading_type(callback: types.CallbackQuery):
 	Handle the callback for trading_type and check its validity.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
+
 	await callback.answer()
 
 	txt = await misc.get_language_module(user_id)
@@ -225,6 +241,10 @@ async def fiat(callback: types.CallbackQuery):
 	Handle the callback for fiat and check its validity.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
+
 	await callback.answer()
 
 	txt = await misc.get_language_module(user_id)
@@ -246,6 +266,7 @@ async def fiat(callback: types.CallbackQuery):
 
 		available_banks: Banks = await db.get_banks_by_fiat(fiat)
 		await util.save_parameter(user_id, available_banks)
+		await util.save_parameter(user_id, Limits(None))
 
 		return
 	else:

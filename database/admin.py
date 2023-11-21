@@ -1,10 +1,11 @@
 from asyncpg.connection import Connection
-from typing import List
+from typing import List, Union
 
 from config import logger
 
-from entities import User
-
+from entities import (
+	User, Supergroup, Group, Channel
+)
 
 
 
@@ -16,7 +17,7 @@ async def get_admins(connection: Connection) -> list:
 	admins = []
 	try:
 		records = await connection.fetch(f"""
-			SELECT user_id FROM users WHERE is_admin = true;
+			SELECT admin_id FROM admins;
 		""")
 		if not records:
 			return []
@@ -25,6 +26,82 @@ async def get_admins(connection: Connection) -> list:
 			admins.append(record.get("user_id"))
 
 		return admins
+	except Exception as e:
+		logger.error(e)
+		return []
+
+
+@logger.catch
+async def add_admin_chat(connection: Connection, admin_id: int, chat_id: int) -> bool:
+	"""
+	Adds an admin to a chat in the database.
+
+	Returns:
+		bool: True if the admin was added successfully, False otherwise.
+	"""
+	try:
+		await connection.execute(f"""
+			BEGIN TRANSACTION ISOLATION LEVEL repeatable read;
+
+			INSERT INTO chats VALUES(
+				{chat_id}, {admin_id}
+			);
+
+			COMMIT;
+		""")
+
+		return True
+	except Exception as e:
+		logger.error(e)
+		return False
+
+
+@logger.catch
+async def get_admin_chats(connection: Connection, admin_id: int) -> List[Union[Supergroup, Group, Channel]]:
+	"""
+	Fetches chats (Supergroups, Channels, and Groups) for a specific admin.
+	"""
+	chats = list()
+	try:
+		# Fetch all chats (Supergroups, Channels, and Groups) for the specified admin
+		records = await connection.fetch(f"""
+			SELECT users.*
+			FROM users
+			JOIN chats ON users.user_id = chats.chat_id
+			WHERE 
+				chats.admin_id = {admin_id} AND
+				users.chat_type IN ('supergroup', 'channel', 'group');
+		""")
+
+		# Iterate through the fetched records and create corresponding instances
+		for record in records:
+			chat_type = record.get("chat_type")
+
+			if chat_type == "supergroup":
+				chat_instance = Supergroup
+			elif chat_type == "channel":
+				chat_instance = Channel
+			elif chat_type == "group":
+				chat_instance = Group
+			else:
+				logger.warning(f"Unsupported chat_type: {chat_type}")
+				continue
+
+			chat = chat_instance(
+				user_id=record.get("user_id"),
+				username=record.get("username"),
+				entry_date=record.get("entry_date"),
+				is_bot_on=record.get("is_bot_on"),
+				is_subscription_active=record.get("is_subscription_active"),
+				subscription_id=record.get("subscription_id"),
+				subscription_begin_date=record.get("subscription_begin_date"),
+				is_test_active=record.get("is_test_active"),
+				test_begin_date=record.get("test_begin_date"),
+				language=record.get("language")
+			)
+			chats.append(chat)
+
+		return chats
 	except Exception as e:
 		logger.error(e)
 		return []
@@ -60,7 +137,8 @@ async def update_user(connection: Connection, user: User) -> bool:
 					f"'{user.test_begin_date}'"
 					if user.test_begin_date 
 					else 'NULL'
-				}
+				},
+				language = '{user.language}'
 			WHERE user_id = {user.user_id};
 
 			COMMIT;

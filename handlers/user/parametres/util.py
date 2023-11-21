@@ -1,5 +1,5 @@
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup
 from aiogram.dispatcher import FSMContext
-from aiogram import types
 from typing import Union, List
 
 from create_bot import bot
@@ -20,10 +20,10 @@ async def parametres_text(user_id: int) -> str:
 	Return the formatted text for the parametres message based on the user's parameters.
 	"""
 	params: Parametres = await manager.get_user_parametres(user_id)
-	txt = await misc.get_language_module(user_id)
-
 	if not params:
 		return None
+
+	txt = await misc.get_language_module(user_id)
 
 	parametres_text = txt.parametres.format(
 		limits=txt.any_limits if not params.limits.value else f"{params.limits.value:,}{params.fiat.symbol}",
@@ -39,28 +39,33 @@ async def parametres_text(user_id: int) -> str:
 
 
 @logger.catch
-async def back_to_parametres(user_id_or_query: Union[int, types.CallbackQuery], state: FSMContext=None):
+async def back_to_parametres(user_id_or_query: Union[int, CallbackQuery], state: FSMContext=None):
 	"""
 	Delete the info or error message and return the markup for the Parametres menu message.
 	The function can be called manually or handle the callback.
 	"""
-	if state:
-		await state.finish()
+	if isinstance(user_id_or_query, CallbackQuery):
+		callback = user_id_or_query
+		if not await misc.access_check(callback):
+			return
 
-	if isinstance(user_id_or_query, types.CallbackQuery):
-		user_id = user_id_or_query["from"]["id"]
-		await user_id_or_query.answer()
+		user_id = callback["message"]["chat"]["id"]
+		await callback.answer()
 	else:
 		user_id = user_id_or_query
 
-	await AdditionalMessage.delete(user_id)
+	if state:
+		await state.finish()
+
+	is_delted = await AdditionalMessage.delete(user_id)
 
 	parametres_message = await parametres_text(user_id)
 	if not parametres_message:
+		logger.error(f"{user_id}: {parametres_message=}")
 		return
 
 	kb = await misc.get_keyboard_module(user_id)
-	await MainMessage.edit(user_id, parametres_message, reply_markup=kb.inline.parametres)
+	msg = await MainMessage.edit(user_id, parametres_message, reply_markup=kb.inline.parametres)
 	
 
 @logger.catch
@@ -103,11 +108,11 @@ def mark_markup_chosen_buttons(markup: dict, chosen_values: List[str]) -> dict:
 
 
 @logger.catch
-def get_markup_chosen_values(markup: types.InlineKeyboardMarkup) -> List[str]:
+def get_markup_chosen_values(markup: InlineKeyboardMarkup) -> List[str]:
 	"""
 	Get the chosen values from the inline keyboard markup.
 	Args:
-		markup (types.InlineKeyboardMarkup): The inline keyboard markup.
+		markup (InlineKeyboardMarkup): The inline keyboard markup.
 	Returns:
 		List[str]: List of chosen values.
 	"""

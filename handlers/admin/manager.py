@@ -1,6 +1,6 @@
 from aiogram import types
 from dataclasses import astuple
-from typing import List
+from typing import List, Union
 
 from config import logger, get_conn
 from create_bot import bot
@@ -9,7 +9,9 @@ from database import (
 	user as user_db
 )
 
-from entities import User
+from entities import (
+	User, Supergroup, Channel, Group
+)
 
 
 
@@ -20,8 +22,51 @@ async def get_admins() -> list:
 	"""
 	try:
 		connection = await get_conn()
-		return await db.get_admins(connection)
+		admins: list = await db.get_admins(connection)
 
+		return admins
+	except Exception as e:
+		logger.error(e)
+		return []
+
+
+@logger.catch
+async def add_admin_chat(admin_id: int, chat_id: int) -> bool:
+	"""
+	Adds a chat to the list of admin's managed chats.
+
+	Returns:
+		bool: True if the operation is successful, False otherwise.
+	"""
+	try:
+		# Establish a database connection
+		connection = await get_conn()
+
+		# Add the admin chat to the database
+		on_success: bool = await db.add_admin_chat(connection, admin_id, chat_id)
+
+		return on_success
+	except Exception as e:
+		logger.error(e)
+		return False
+
+
+@logger.catch
+async def get_admin_chats(admin_id: int) -> List[Union[Supergroup, Group, Channel]]:
+	"""
+	Retrieves a list of chats managed by the specified admin.
+
+	Returns:
+		List[Union[Supergroup, Group, Channel]]: A list of chats managed by the admin.
+	"""
+	try:
+		# Establish a database connection
+		connection = await get_conn()
+
+		# Retrieve admin's managed chats from the database
+		chats: List[Union[Supergroup, Group, Channel]] = await db.get_admin_chats(connection, admin_id)
+
+		return chats
 	except Exception as e:
 		logger.error(e)
 		return []

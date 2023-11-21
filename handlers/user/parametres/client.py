@@ -28,6 +28,10 @@ async def menu(callback: types.CallbackQuery):
 	Handles the 'parametres_menu' callback. Displays the user's parameters.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
+
 	await MainMessage.delete(user_id)
 
 	txt = await misc.get_language_module(user_id)
@@ -72,6 +76,9 @@ async def limits(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 
+	if not await misc.access_check(callback):
+		return
+
 	txt = await misc.get_language_module(user_id)
 	kb = await misc.get_keyboard_module(user_id)
 
@@ -98,6 +105,9 @@ async def banks(callback: types.CallbackQuery):
 	Retrieves the banks parameter value for the user and displays it with the corresponding markup.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
 
 	txt = await misc.get_language_module(user_id)
 	kb = await misc.get_keyboard_module(user_id)
@@ -141,6 +151,9 @@ async def currencies(callback: types.CallbackQuery):
 	"""
 	user_id = callback["message"]["chat"]["id"]
 
+	if not await misc.access_check(callback):
+		return
+
 	txt = await misc.get_language_module(user_id)
 	kb = await misc.get_keyboard_module(user_id)
 
@@ -176,9 +189,11 @@ async def markets(callback: types.CallbackQuery):
 	"""
 	Handle the callback when the user clicks on the 'markets' button in the parametres menu.
 	Retrieves the markets parameter value for the user and displays it with the corresponding markup.
-
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
 
 	txt = await misc.get_language_module(user_id)
 	kb = await misc.get_keyboard_module(user_id)
@@ -216,9 +231,12 @@ async def spread(callback: types.CallbackQuery):
 	Handle the callback when the user clicks on the 'spread' button in the parametres menu.
 	Deletes the menu message markup and starts the input state for entering the spread.
 	"""
-	await callback.answer()
-
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
+
+	await callback.answer()
 	await MainMessage.edit(user_id, await util.parametres_text(user_id))
 
 	txt = await misc.get_language_module(user_id)
@@ -239,6 +257,9 @@ async def trading_type(callback: types.CallbackQuery):
 	Retrieves the trading_type parameter value for the user and displays it with the corresponding markup.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
 
 	txt = await misc.get_language_module(user_id)
 	kb = await misc.get_keyboard_module(user_id)
@@ -280,6 +301,8 @@ async def fiat(callback: types.CallbackQuery):
 	Retrieves the fiat parameter value for the user and displays it with the corresponding markup.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+
 
 	await callback.answer()
 	await MainMessage.edit(user_id, await util.parametres_text(user_id))

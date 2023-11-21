@@ -25,8 +25,7 @@ async def start(message: types.Message, state: FSMContext):
 	"""
 	user = User(
 		user_id=message["from"]["id"],
-		username=str(message["from"]["username"]),
-		language=message["from"]["language_code"]
+		username=str(message["from"]["username"])
 	)
 
 	txt = await misc.get_language_module(user.user_id)
@@ -60,7 +59,7 @@ async def start(message: types.Message, state: FSMContext):
 
 	else:
 		user.entry_date = datetime.now()
-		registered = await manager.set_new_user(user)
+		registered = await manager.create_user(user)
 
 		if not registered: 
 			logger.error(f"{user.user_id}: {registered=}")
@@ -89,13 +88,16 @@ async def start(message: types.Message, state: FSMContext):
 		)
 
 
-
 @logger.catch
 async def language(message: types.Message):
 	"""
-
+	Handle the command to change the language settings.
 	"""
-	user_id = message["from"]["id"]
+	user_id = message["chat"]["id"]
+
+	if not await misc.access_check(message):
+		return
+
 	await AdditionalMessage.delete(user_id)
 
 	txt = await misc.get_language_module(user_id)
@@ -105,7 +107,6 @@ async def language(message: types.Message):
 		txt.language_menu,
 		reply_markup=kb.inline.language_menu
 	)
-	await MainMessage.acquire(message)
 
 
 @logger.catch
@@ -113,8 +114,12 @@ async def switch_bot_state(message: types.Message, state: FSMContext):
 	"""
 	Switches the state of the bot for a user.
 	"""
+	user_id = message["chat"]["id"]
+
+	if not await misc.access_check(message):
+		return
+
 	await state.finish()
-	user_id = message["from"]["id"]
 	await AdditionalMessage.delete(user_id)
 
 	txt = await misc.get_language_module(user_id)
@@ -135,15 +140,18 @@ async def switch_bot_state(message: types.Message, state: FSMContext):
 	await MainMessage.acquire(msg)
 
 
-
 @logger.catch
 async def parametres(message: types.Message, state: FSMContext):
 	"""
 	Handles the 'parametres' reply keyboard button.
 	Send trading type option message
 	"""
+	user_id = message["chat"]["id"]
+
+	if not await misc.access_check(message):
+		return
+
 	await state.finish()
-	user_id = message["from"]["id"]
 	await AdditionalMessage.delete(user_id)
 
 	txt = await misc.get_language_module(user_id)
@@ -198,7 +206,7 @@ async def channel(message: types.Message, state: FSMContext):
 		caption=txt.channel_link
 	)
 	await MainMessage.acquire(msg)
-	
+
 
 @logger.catch
 async def support(message: types.Message, state: FSMContext):

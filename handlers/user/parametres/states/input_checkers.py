@@ -91,7 +91,7 @@ async def spread(user_id: int, user_input: str) -> Union[float, InputError]:
 
 	is_tester = await manager.is_tester(user_id)
 	if is_tester:
-		result = TesterParametresChecker(spread).check()
+		result = await TesterParametresChecker(spread).check()
 		if isinstance(result, InputError):
 			return result
 

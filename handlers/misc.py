@@ -1,6 +1,9 @@
 from config import logger, get_conn
 from typing import Union
 from database import user as db
+from handlers.user import manager
+
+from aiogram.types import Message, CallbackQuery
 
 from assets.texts import (
 	ru as txt_ru, en as txt_en
@@ -80,3 +83,23 @@ async def get_keyboard_module(user_id: int, default_lang: str="ru"):
 
 	logger.warning(f"{user_id}: No keyboard module detected for '{language_string}'")
 	return kb_modules[default_lang]
+
+
+@logger.catch
+async def access_check(query: Union[Message, CallbackQuery]) -> bool:
+	"""
+	RENAME AND REWRITE FUNCTION
+	"""
+	if isinstance(query, Message):
+		if query["chat"]["type"] != "private":
+			if not await manager.is_admin(query["from"]["id"]):
+				return False
+	elif isinstance(query, CallbackQuery): 
+		if query["message"]["chat"]["type"] != "private":
+			if not await manager.is_admin(query["from"]["id"]):
+				await query.answer("Не админ")
+				return False
+	else:
+		raise ValueError
+
+	return True

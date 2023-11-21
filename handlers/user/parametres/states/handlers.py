@@ -24,13 +24,16 @@ async def limits(message: types.Message, state: FSMContext):
 	"""
 	Handle the input for limits and check its validity.
 	"""
-	user_id = message["from"]["id"]
+	user_id = message["chat"]["id"]
 	user_input = message["text"]
 
-	kb = await misc.get_keyboard_module(user_id)
+	if not await misc.access_check(message):
+		return
+
 	result = await checker.limits(user_id, user_input)
 
 	if isinstance(result, InputError):
+		kb = await misc.get_keyboard_module(user_id)
 		msg = await message.answer(
 			result.message,
 			reply_markup=kb.inline.back_to_parametres
@@ -49,7 +52,7 @@ async def spread(message: types.Message, state: FSMContext):
 	"""
 	Handle the input for spread and check its validity.
 	"""
-	user_id = message["from"]["id"]
+	user_id = message["chat"]["id"]
 	user_input = message["text"]
 
 	kb = await misc.get_keyboard_module(user_id)

@@ -1,4 +1,5 @@
 from aiogram import executor
+import asyncio
 
 from create_bot import dp
 from config import logger
@@ -7,6 +8,7 @@ from handlers.user import main as users_registrator
 from handlers.admin import main as admins_registrator
 from timers import main as timers_registrator
 from signals import main as signals_server_starter
+
 
 
 # Register command handlers
@@ -25,7 +27,10 @@ async def on_startup(_):
 	logger.success("The bot is online!")
 
 
-# Start the bot using long-polling
 if __name__ == "__main__":
-	executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
-
+	try:
+		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+	finally:
+		from handlers.admin.client import clear_signals
+		loop = asyncio.new_event_loop()
+		loop.run_until_complete(clear_signals())

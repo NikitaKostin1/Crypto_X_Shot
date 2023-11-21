@@ -7,6 +7,8 @@ from aiogram.types.input_file import InputFile
 from aiogram import types
 from datetime import datetime, timedelta
 
+from typing import Union
+
 from config import logger
 from handlers import misc
 from create_bot import bot
@@ -91,11 +93,14 @@ async def send_photo( \
 
 
 @logger.catch
-async def determine_reply_markup(user_id: int) -> ReplyKeyboardMarkup:
+async def determine_reply_markup(user_id: int) -> Union[ReplyKeyboardMarkup, None]:
 	"""
 	Determines the appropriate reply keyboard markup based on the user's status.
 	"""
 	kb = await misc.get_keyboard_module(user_id)
+
+	if await manager.is_chat(user_id):
+		return None
 
 	if await manager.is_tester(user_id):
 		return kb.reply.tester
@@ -183,6 +188,10 @@ async def set_language(callback: types.CallbackQuery):
 	sets it for the user. It then sends a confirmation message to the user.
 	"""
 	user_id = callback["message"]["chat"]["id"]
+
+	if not await misc.access_check(callback):
+		return
+
 	language: str = callback["data"].split()[1]
 	await callback.message.delete()
 
