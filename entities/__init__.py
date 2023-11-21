@@ -1,7 +1,7 @@
 from .custom_message import (
 	MainMessage, AdditionalMessage
 )
-from .user import User
+from .user import User, Group, Supergroup, Channel
 from .subscriptions import Subscriptions
 from .parametres import (
 	Parametres, Parameter,
