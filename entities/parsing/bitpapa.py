@@ -111,7 +111,7 @@ class BitpapaParser(Parser):
 				limits_max=int(float(advertisement["amount_max"]))
 			)
 			advertiser = Advertiser(
-				advertiser_id=advertisement["user"]["user_name"]
+				advertiser_id=str(advertisement["user"]["user_name"])
 			)
 
 			advertisement = Advertisement(

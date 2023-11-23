@@ -105,7 +105,7 @@ class BybitParser(Parser):
 				limits_max=int(float(advertisement["maxAmount"]))
 			)
 			advertiser = Advertiser(
-				advertiser_id=advertisement["userId"]
+				advertiser_id=str(advertisement["userId"])
 			)
 
 			advertisement = Advertisement(

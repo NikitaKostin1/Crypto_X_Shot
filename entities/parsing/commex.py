@@ -86,7 +86,7 @@ class CommexParser(Parser):
 				limits_max=float(advertisement["adDetailResp"]["dynamicMaxSingleTransAmount"])
 			)
 			advertiser = Advertiser(
-				advertiser_id=advertisement["advertiserVo"]["userNo"]
+				advertiser_id=str(advertisement["advertiserVo"]["userNo"])
 			)
 
 			advertisement = Advertisement(

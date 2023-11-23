@@ -111,7 +111,7 @@ class BinanceParser(Parser):
 				limits_max=int(float(advertisement["adv"]["maxSingleTransAmount"]))
 			)
 			advertiser = Advertiser(
-				advertiser_id=advertisement["advertiser"]["userNo"]
+				advertiser_id=str(advertisement["advertiser"]["userNo"])
 			)
 
 			advertisement = Advertisement(

@@ -115,7 +115,7 @@ class HuobiParser(Parser):
 				limits_max=int(float(advertisement["maxTradeLimit"]))
 			)
 			advertiser = Advertiser(
-				advertiser_id=advertisement["uid"]
+				advertiser_id=str(advertisement["uid"])
 			)
 
 			advertisement = Advertisement(

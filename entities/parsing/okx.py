@@ -103,7 +103,7 @@ class OkxParser(Parser):
 				limits_max=int(float(advertisement["quoteMaxAmountPerOrder"]))
 			)
 			advertiser = Advertiser(
-				advertiser_id=advertisement["publicUserId"]
+				advertiser_id=str(advertisement["publicUserId"])
 			)
 
 			advertisement = Advertisement(

@@ -26,7 +26,7 @@ class AdvСonditions:
 @dataclass
 class Advertiser:
 	"""Data class representing an advertiser"""
-	advertiser_id: int
+	advertiser_id: str
 
 
 
