@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardMarkup, Message
 from aiogram.utils.exceptions import (
 	BotBlocked, ChatNotFound, 
 	MessageToEditNotFound, MessageNotModified
@@ -12,7 +12,7 @@ from config import logger
 import asyncio
 
 from typing import (
-	NoReturn, Union, Tuple
+	NoReturn, Union, Tuple, List
 )
 from entities.parsing.types import (
 	ParserResponse, Advertisement
@@ -35,7 +35,6 @@ async def set_fiats_symbols():
 	fiats_symbols = symbols
 
 
-
 @logger.catch
 async def notificate_user(user_id: int) -> NoReturn:
 	"""
@@ -48,7 +47,6 @@ async def notificate_user(user_id: int) -> NoReturn:
 		await user_manager.disable_bot(user_id)
 	except ChatNotFound:
 		pass
-
 
 
 @logger.catch
@@ -171,6 +169,9 @@ async def send_signal(
 				reply_markup=markup,
 				disable_web_page_preview=True
 			)
+			if signal_index == 0:
+				if bid.conditions.currency == parametres.currencies.value[0]:
+					await pin_message(msg)
 
 		else:
 			message_id = former_signals[signal_index].message_id
@@ -192,13 +193,11 @@ async def send_signal(
 		bid = former_signals[signal_index].bid
 		ask = former_signals[signal_index].ask
 
-	signal = Signal(
+	return Signal(
 		message_id=msg.message_id,
 		bid=bid,
 		ask=ask
 	)
-
-	return signal
 
 
 @logger.catch
@@ -217,9 +216,7 @@ async def delete_expired_signals(
 	Returns:
 		None
 	"""
-	for signal_ndx in range(sent_signals_amount, len(former_signals)):
-		signal = former_signals[signal_ndx]
-
+	for signal in former_signals[sent_signals_amount:len(former_signals)]:
 		try:
 			await bot.delete_message(
 				chat_id=user_id, 
@@ -233,7 +230,7 @@ async def delete_expired_signals(
 async def iterate_advertisments(
 	user_id: int, parametres: Parametres,
 	responses: Tuple[ParserResponse],
-	former_signals: Tuple[Signal]
+	former_signals: Tuple[Signal], sent_signals_per_cycle: List[Signal]
 ) -> Tuple[Signal]:
 	"""
 	Iterate through responses and send signals to the user for valid bid-ask pairs.
@@ -247,36 +244,39 @@ async def iterate_advertisments(
 	Returns:
 		Tuple[Signal]: Tuple of sent signals.
 	"""
-	sent_signals = list()
-
 	for response in responses:
-		if parametres.bid_type.value == "Taker":
-			bid = response.best_bid
-		else:
-			bid = response.second_ask
-		if bid is None:
-			continue
+		bid = response.best_bid if parametres.bid_type.value == "Taker" else response.second_ask
+		if bid is None: continue
 
 		for response in responses:
-			if parametres.ask_type.value == "Taker":
-				ask = response.best_ask
-			else:
-				ask = response.second_bid
-			if ask is None:
-				continue
+			ask = response.best_ask if parametres.ask_type.value == "Taker" else response.second_bid
+			if ask is None: continue
 
 			signal = await send_signal(
 				user_id, parametres, bid, ask, 
-				former_signals, len(sent_signals)
+				former_signals, len(sent_signals_per_cycle)
 			)
-			if signal:
-				sent_signals.append(signal)
+			if signal: 
+				sent_signals_per_cycle.append(signal)
 
 			await asyncio.sleep(0.3)
 
-	return tuple(sent_signals)
+	return tuple(sent_signals_per_cycle)
 
 
+@logger.catch
+async def pin_message(msg: Message): 
+	"""
+	Pins a signal message.
+	"""
+	try:
+		await bot.pin_chat_message(
+			chat_id=msg.chat.id,
+			message_id=msg.message_id,
+			disable_notification=True,
+		)
+	except Exception as e:
+		logger.error(e)
 
 
 @logger.catch

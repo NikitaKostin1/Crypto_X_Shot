@@ -34,8 +34,8 @@ async def server(wait_for: int):
 	await manager.set_fiats_symbols()
 
 	while True:
-		await asyncio.sleep(5)
 		logger.success("Server ping")
+		await asyncio.sleep(wait_for)
 
 		try:
 			active_users: List[User] = await user_manager.get_active_users()
@@ -46,6 +46,7 @@ async def server(wait_for: int):
 				if not user_id in [user.user_id for user in active_users]:
 					notified_users.remove(user_id)
 
+
 			for user in active_users:
 				user_id = user.user_id
 
@@ -55,32 +56,34 @@ async def server(wait_for: int):
 					logger.error(f"No parametres: {user_id}")
 					continue
 
-				total_sent_signals = tuple()
-				if signals.get(user_id):
-					former_signals = signals[user_id]
-				else:
-					former_signals = tuple()
+				sent_signals_per_cycle = tuple()
+				former_signals = signals.get(user_id, tuple())
 
 				for currency in parametres.currencies.value:
 					parsers_responses = await manager.gather_parsers_responses(
 						currency, parametres
 					)
 
-					sent_signals: Tuple[Signal] = await manager.iterate_advertisments(
-						user_id, parametres, parsers_responses, former_signals
+					sent_signals_per_cycle: Tuple[Signal] = await manager.iterate_advertisments(
+						user_id, parametres, parsers_responses, former_signals, list(sent_signals_per_cycle)
 					)
-					total_sent_signals += sent_signals
+
+				await manager.delete_expired_signals(
+					user_id, len(sent_signals_per_cycle), former_signals
+				)
+
 
 				# Notification about inefficient parametres
-				if len(total_sent_signals) < min_acceptable_signals_amount and \
-									not user_id in notified_users:
+				if len(sent_signals_per_cycle) < min_acceptable_signals_amount and \
+									not user_id in notified_users and \
+									not await user_manager.is_chat(user_id):
 					await manager.notificate_user(user_id)
 					notified_users.append(user_id)
 
-				if total_sent_signals:
-					signals[user_id] = total_sent_signals
+				if sent_signals_per_cycle:
+					signals[user_id] = sent_signals_per_cycle
 
-				logger.info(f"{user_id} | {user.username} Sent signals: {len(total_sent_signals)}")
+				logger.info(f"{user_id} | {user.username} Sent signals: {len(sent_signals_per_cycle)}")
 
 		except Exception as e:
 			logger.error(f"Signals thread crashed: {e}")
