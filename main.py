@@ -30,6 +30,7 @@ signals.start_server()
 async def on_startup(_):
 	""" Executes immediately after the bot startup """
 	logger.success("The bot is online!")
+	done_event.wait()
 
 
 def on_shutdown(signum, frame):
@@ -56,5 +57,4 @@ if __name__ == "__main__":
 	else:
 		done_event = Event()
 
-		done_event.wait()
 		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
