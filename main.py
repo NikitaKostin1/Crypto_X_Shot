@@ -1,6 +1,8 @@
 from aiogram import executor
+from threading import Event
 import asyncio
-import atexit
+import sys
+import signal
 
 from create_bot import dp
 from config import logger
@@ -8,9 +10,11 @@ from config import logger
 from handlers.user import main as users_registrator
 from handlers.admin import main as admins_registrator
 from timers import main as timers_registrator
-from signals import main as signals_server_starter
+import signals
 
 
+
+IS_WINDOWS = sys.platform == 'win32'
 
 # Register command handlers
 users_registrator.register_commands_handlers(dp)
@@ -20,7 +24,7 @@ admins_registrator.register_commands_handlers(dp)
 timers_registrator.register_timers()
 
 # Start signals server thread
-signals_server_starter.start_server()
+signals.start_server()
 
 
 async def on_startup(_):
@@ -28,16 +32,31 @@ async def on_startup(_):
 	logger.success("The bot is online!")
 
 
-def on_shutdown():
+def on_shutdown(signum, frame):
 	from handlers.admin.client import clear_signals
-	loop = asyncio.new_event_loop()
-	loop.run_until_complete(clear_signals())
+	loop = asyncio.get_event_loop()
+	loop.create_task(clear_signals())
+
+	if IS_WINDOWS:
+		loop.stop()
+	else:
+		done_event.set()
+
+	logger.success("The bot is offline!")
 
 
 if __name__ == "__main__":
-	atexit.register(on_shutdown)
+	signal.signal(signal.SIGTERM, on_shutdown)
+	signal.signal(signal.SIGINT, on_shutdown)
 
-	# try:
-	executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
-	# finally:
-	# 	pass
+	if IS_WINDOWS:
+		loop = asyncio.new_event_loop()
+
+
+		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+	else:
+		done_event = Event()
+
+		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+
+		done_event.wait()

@@ -277,3 +277,5 @@ async def clear_signals(_=None):
 
 		logger.success(f"{user_id}: Deleted {deleted_amount}/{len(signals)}")
 		storage[user_id] = tuple()
+
+	logger.info("cleared")

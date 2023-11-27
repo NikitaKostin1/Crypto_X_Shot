@@ -8,7 +8,7 @@ from . import thread
 
 @logger.catch
 def start_server():
-	"""
+	"""	
 	Starts the signals server in a separate thread
 	"""
 	def asynchronous_start(wait_for, bot_loop):
@@ -19,9 +19,10 @@ def start_server():
 			thread.server(wait_for), bot_loop
 		)
 
+
 	bot_loop = asyncio.get_event_loop()
-	server_thread = threading.Thread(
+	signals_thread = threading.Thread(
 		target=asynchronous_start, args=(90, bot_loop)
 	)
-	server_thread.daemon = True
-	server_thread.start()
+	signals_thread.daemon = True
+	signals_thread.start()
