@@ -37,8 +37,11 @@ def on_shutdown(signum, frame):
 	loop = asyncio.get_event_loop()
 	loop.create_task(clear_signals())
 
-	if IS_WINDOWS:
-		loop.stop()
+	loop.stop()
+	# if IS_WINDOWS:
+	# 	loop.stop()
+	# else:
+	# 	done_event.set()
 
 	logger.success("The bot is offline!")
 
@@ -47,9 +50,12 @@ if __name__ == "__main__":
 	signal.signal(signal.SIGTERM, on_shutdown)
 	signal.signal(signal.SIGINT, on_shutdown)
 
-	if IS_WINDOWS:
-		loop = asyncio.new_event_loop()
+	executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
 
-		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
-	else:
-		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+	# if IS_WINDOWS:
+	# 	# loop = asyncio.new_event_loop()
+
+	# else:
+	# 	# done_event = Event()
+
+	# 	executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
