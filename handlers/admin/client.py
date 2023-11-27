@@ -260,9 +260,7 @@ async def clear_signals(_=None):
 	and cleans signals storage
 	"""
 	from signals.thread import signals as storage
-	logger.info(0.1)
 	for user_id in storage:
-		logger.info(0.2)
 		signals = storage[user_id]
 		deleted_amount = 0
 
@@ -279,6 +277,4 @@ async def clear_signals(_=None):
 		logger.success(f"{user_id}: Deleted {deleted_amount}/{len(signals)}")
 		storage[user_id] = tuple()
 
-	logger.info(0.3)
 	logger.info("cleared")
-	logger.info(0.4)
