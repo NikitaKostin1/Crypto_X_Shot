@@ -40,7 +40,9 @@ def on_shutdown(signum, frame):
 	if IS_WINDOWS:
 		loop.stop()
 	else:
+		logger.info(3)
 		done_event.set()
+		logger.info(4)
 
 	logger.success("The bot is offline!")
 
@@ -52,11 +54,13 @@ if __name__ == "__main__":
 	if IS_WINDOWS:
 		loop = asyncio.new_event_loop()
 
-
 		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
 	else:
 		done_event = Event()
 
+		logger.info(0)
 		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+		logger.info(1)
 
 		done_event.wait()
+		logger.info(2)
