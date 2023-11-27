@@ -35,21 +35,3 @@ async def on_shutdown(dp):
 
 if __name__ == "__main__":
 	executor.start_polling(dp, skip_updates=True, on_startup=on_startup, on_shutdown=on_shutdown)
-
-"""
-async def on_shutdown():
-	from handlers.admin.client import clear_signals
-	loop = asyncio.new_event_loop()
-	loop.run_until_complete()
-
-
-if __name__ == "__main__":
-	atexit.register(on_shutdown)
-
-	try:
-		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
-	finally:
-		from handlers.admin.client import clear_signals
-		loop = asyncio.new_event_loop()
-		loop.run_until_complete(clear_signals())
-"""
