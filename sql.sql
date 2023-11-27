@@ -54,12 +54,12 @@ CREATE TABLE supported_banks (
 );
 
 CREATE TABLE admins (
-	admin_id	INTEGER			PRIMARY KEY,
-	username	VARCHAR(255)	NOT NULL
+	admin_id	BIGINT			PRIMARY KEY,
+	username	VARCHAR(50)		NOT NULL
 );
 CREATE TABLE chats (
 	chat_id		BIGINT			PRIMARY KEY,
-	admin_id	INT,
+	admin_id	BIGINT,
 	FOREIGN KEY (admin_id) REFERENCES admins(admin_id),
 	FOREIGN KEY (chat_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
