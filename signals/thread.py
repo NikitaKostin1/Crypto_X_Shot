@@ -50,8 +50,6 @@ async def server(wait_for: int):
 			for user in active_users:
 				user_id = user.user_id
 
-				if user_id != 381906725: continue
-
 				parametres: Parametres = await user_manager.get_user_parametres(user_id)
 
 				if not parametres:
