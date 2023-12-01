@@ -68,10 +68,10 @@ if __name__ == "__main__":
 			asyncio.run(on_shutdown())
 
 	else:
-		loop = asyncio.new_event_loop()
-		loop.add_signal_handler(signal.SIGINT, on_shutdown)
-	# loop.add_signal_handler(signal.SIGTERM, lambda s, f: loop.create_task(on_shutdown(s, f)))
+	# 	loop = asyncio.new_event_loop()
+	# 	loop.add_signal_handler(signal.SIGINT, on_shutdown)
+	# # loop.add_signal_handler(signal.SIGTERM, lambda s, f: loop.create_task(on_shutdown(s, f)))
 
-		loop.run_forever()
-		logger.info(1)
+	# 	loop.run_forever()
+	# 	logger.info(1)
 		executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
